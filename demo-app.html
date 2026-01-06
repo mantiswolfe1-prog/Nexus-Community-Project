@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00f0ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .status {
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            opacity: 0.8;
+        }
+        .button {
+            background: linear-gradient(45deg, #00f0ff, #ff6b6b);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+        .demo-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nexus</h1>
+        <div class="status">Demo App Loaded Successfully!</div>
+        <p>This demonstrates the launcher concept working.</p>
+
+        <div class="demo-section">
+            <h3>Demo Features:</h3>
+            <button class="button" onclick="showAlert('Dashboard')">Open Dashboard</button>
+            <button class="button" onclick="showAlert('Settings')">Open Settings</button>
+            <button class="button" onclick="showAlert('Games')">Open Games</button>
+        </div>
+
+        <div style="margin-top: 2rem; opacity: 0.6;">
+            <small>This is a demo. Real app would have full functionality.</small>
+        </div>
+    </div>
+
+    <script>
+        function showAlert(feature) {
+            alert(`${feature} would open here in the real app!`);
+        }
+
+        // Demo of the launcher flow
+        console.log('Nexus Demo App Loaded');
+        console.log('Launcher successfully opened app in new tab');
+    </script>
+</body>
+</html>
