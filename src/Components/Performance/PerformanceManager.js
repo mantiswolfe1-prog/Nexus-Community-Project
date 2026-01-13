@@ -1,0 +1,71 @@
+import React, { createContext, useContext, useState, useCallback } from 'react';
+
+const PerformanceContext = createContext();
+
+export const usePerformance = () => {
+  const context = useContext(PerformanceContext);
+  if (!context) {
+    throw new Error('usePerformance must be used within PerformanceProvider');
+  }
+  return context;
+};
+
+export function PerformanceProvider({ children }) {
+  const [performanceMode, setPerformanceMode] = useState('stable'); // stable, adjusting, throttled
+  const [optimized, setOptimized] = useState(false);
+
+  const handlePerformanceChange = useCallback((status) => {
+    setPerformanceMode(status);
+  }, []);
+
+  const optimize = useCallback(() => {
+    setOptimized(true);
+  }, []);
+
+  const resetOptimization = useCallback(() => {
+    setOptimized(false);
+  }, []);
+
+  const getPerformanceSettings = useCallback(() => {
+    if (optimized || performanceMode === 'throttled') {
+      return {
+        particleCount: 30,
+        blur: 0,
+        animationFPS: 30,
+        connectionLines: false,
+        reduceDetail: true
+      };
+    }
+    if (performanceMode === 'adjusting') {
+      return {
+        particleCount: 40,
+        blur: 1,
+        animationFPS: 45,
+        connectionLines: true,
+        reduceDetail: false
+      };
+    }
+    return {
+      particleCount: 50,
+      blur: 2,
+      animationFPS: 60,
+      connectionLines: true,
+      reduceDetail: false
+    };
+  }, [performanceMode, optimized]);
+
+  return (
+    <PerformanceContext.Provider
+      value={{
+        performanceMode,
+        optimized,
+        handlePerformanceChange,
+        optimize,
+        resetOptimization,
+        getPerformanceSettings
+      }}
+    >
+      {children}
+    </PerformanceContext.Provider>
+  );
+}
