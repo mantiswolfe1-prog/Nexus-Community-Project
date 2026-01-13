@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
 import { session } from '../Components/Storage/clientStorage.js';
 import GlassCard from '../Components/UI/GlassCard';
-import NeonButton from '../Components/UI/NeonButton';
+import NeonButton from '../Components/UI/NeonButton.js';
 import AnimatedBackground from '../Components/UI/AnimatedBackground';
 
 export default function AdminDashboard() {

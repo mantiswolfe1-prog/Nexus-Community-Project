@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import NeonButton from '../Components/UI/NeonButton';
+import NeonButton from '../Components/UI/NeonButton.js';
 import { Input } from '../Components/UI/input';
 import { storage, session } from '../Components/Storage/clientStorage.js';
 import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';

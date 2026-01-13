@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { AlertCircle, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
-import NeonButton from '../Components/UI/NeonButton';
+import NeonButton from '../Components/UI/NeonButton.js';
 
 export default function Consent() {
   const [accepted, setAccepted] = useState(false);

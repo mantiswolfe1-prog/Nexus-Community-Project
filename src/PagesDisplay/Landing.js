@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Download, ArrowRight } from 'lucide-react';
-import NeonButton from '../Components/UI/NeonButton';
+import NeonButton from '../Components/UI/NeonButton.js';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 

@@ -4,7 +4,7 @@ import { ArrowLeft, Star, Clock, TrendingUp, Shuffle, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
 import GlassCard from '../Components/UI/GlassCard';
-import NeonButton from '../Components/UI/NeonButton';
+import NeonButton from '../Components/UI/NeonButton.js';
 import GameCard from '../Components/Games/GameCard';
 import GameFilters from '../Components/Games/GameFilters';
 import { storage } from '../Components/Storage/clientStorage.js';

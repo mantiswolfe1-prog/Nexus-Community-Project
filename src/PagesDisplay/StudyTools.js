@@ -4,7 +4,7 @@ import { ArrowLeft, Pen, Calculator, Book, FileText, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
 import GlassCard from '../Components/UI/GlassCard';
-import NeonButton from '../Components/UI/NeonButton';
+import NeonButton from '../Components/UI/NeonButton.js';
 import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';
 import Whiteboard from '../Components/Utilities/Whiteboard';
 import ScientificCalculator from '../Components/Study/ScientificCalculator';
