@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Search, FileText, Trash2, Save } from 'lucide-react';
-import GlassCard from '../UI/GlassCard';
-import NeonButton from '../UI/NeonButton';
-import { Input } from '../UI/input';
-import { Textarea } from '../UI/textarea';
+import GlassCard from '../UI/GlassCard.js';
+import NeonButton from '../UI/NeonButton.js';
+import { Input } from '../UI/input.js';
+import { Textarea } from '../UI/textarea.js';
 
 const SAMPLE_NOTES = [
   { id: 1, title: 'Math Formulas', content: 'Quadratic formula: x = (-b ± √(b²-4ac)) / 2a', category: 'math' },

@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Pencil, Eraser, Trash2, Download, Minus, Plus } from 'lucide-react';
-import GlassCard from '../UI/GlassCard';
-import NeonButton from '../UI/NeonButton';
+import GlassCard from '../UI/GlassCard.js';
+import NeonButton from '../UI/NeonButton.js';
 
 export default function Whiteboard({ accentColor = '#f368e0' }) {
   const canvasRef = useRef(null);

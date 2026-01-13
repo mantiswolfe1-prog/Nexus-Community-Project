@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import GlassCard from '../UI/GlassCard';
+import GlassCard from '../UI/GlassCard.js';
 
 export default function SettingsSection({ 
   title, 

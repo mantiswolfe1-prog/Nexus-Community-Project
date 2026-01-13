@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Send } from 'lucide-react';
-import GlassCard from '../UI/GlassCard';
-import { Input } from '../UI/input';
-import NeonButton from '../UI/NeonButton';
+import GlassCard from '../UI/GlassCard.js';
+import { Input } from '../UI/input.js';
+import NeonButton from '../UI/NeonButton.js';
 
 export default function AIChat({ accentColor }) {
   const [messages, setMessages] = useState([]);

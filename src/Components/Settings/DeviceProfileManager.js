@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Check, Trash2 } from 'lucide-react';
-import NeonButton from '../UI/NeonButton';
-import { Input } from '../UI/input';
+import NeonButton from '../UI/NeonButton.js';
+import { Input } from '../UI/input.js';
 
 export default function DeviceProfileManager({ profiles, activeProfile, onSwitch, onCreate, onDelete }) {
   const [creating, setCreating] = useState(false);

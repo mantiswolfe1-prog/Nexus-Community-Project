@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import GlassCard from '../UI/GlassCard';
+import GlassCard from '../UI/GlassCard.js';
 
 export default function Calculator({ accentColor = '#f368e0' }) {
   const [display, setDisplay] = useState('0');

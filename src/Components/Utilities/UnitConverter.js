@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeftRight } from 'lucide-react';
-import GlassCard from '../UI/GlassCard';
-import { Input } from '../UI/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../UI/select';
+import GlassCard from '../UI/GlassCard.js';
+import { Input } from '../UI/input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../UI/select.js';
 
 const CONVERSIONS = {
   length: {

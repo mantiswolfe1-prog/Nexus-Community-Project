@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Play, ThumbsUp, MessageCircle } from 'lucide-react';
-import NeonButton from '../UI/NeonButton';
+import NeonButton from '../UI/NeonButton.js';
 
 const MOCK_VIDEOS = [
   { id: 1, title: 'Study Music for Focus', channel: 'Study Beats', views: '1.2M', likes: '45K' },

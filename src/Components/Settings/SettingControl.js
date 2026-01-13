@@ -1,8 +1,8 @@
 import React from 'react';
-import { Switch } from '../UI/switch';
-import { Slider } from '../UI/slider';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../UI/select';
-import { Label } from '../UI/label';
+import { Switch } from '../UI/switch.js';
+import { Slider } from '../UI/slider.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../UI/select.js';
+import { Label } from '../UI/label.js';
 
 export default function SettingControl({ 
   title, 

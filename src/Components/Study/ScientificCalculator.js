@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import GlassCard from '../UI/GlassCard';
+import GlassCard from '../UI/GlassCard.js';
 
 export default function ScientificCalculator({ accentColor }) {
   const [display, setDisplay] = useState('0');

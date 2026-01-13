@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import GlassCard from '../UI/GlassCard';
-import NeonButton from '../UI/NeonButton';
+import GlassCard from '../UI/GlassCard.js';
+import NeonButton from '../UI/NeonButton.js';
 
 const FORMULAS = {
   math: [

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Music, Play, Pause, SkipForward, SkipBack } from 'lucide-react';
-import NeonButton from '../UI/NeonButton';
+import NeonButton from '../UI/NeonButton.js';
 
 const MOCK_TRACKS = [
   { id: 1, title: 'Blinding Lights', artist: 'The Weeknd', duration: '3:20' },

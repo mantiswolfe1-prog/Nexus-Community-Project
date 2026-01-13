@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Shuffle } from 'lucide-react';
-import GlassCard from '../UI/GlassCard';
-import { Slider } from '../UI/slider';
+import GlassCard from '../UI/GlassCard.js';
+import { Slider } from '../UI/slider.js';
 
 export default function MusicPlayer({ 
   track,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Cpu, Gamepad2 } from 'lucide-react';
-import { Input } from '../UI/input';
+import { Input } from '../UI/input.js';
 import { cn } from '../../utils.js';
 
 export default function GameFilters({ 

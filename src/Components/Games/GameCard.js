@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, Clock, Cpu, ExternalLink } from 'lucide-react';
-import GlassCard from '../UI/GlassCard';
+import GlassCard from '../UI/GlassCard.js';
 
 export default function GameCard({ 
   game, 

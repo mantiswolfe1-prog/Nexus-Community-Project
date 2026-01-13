@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Sparkles, Loader2, BookOpen, Calculator, FileText, Code } from 'lucide-react';
-import GlassCard from '../UI/GlassCard';
-import { Input } from '../UI/input';
+import GlassCard from '../UI/GlassCard.js';
+import { Input } from '../UI/input.js';
 import { base44 } from '@/api/base44Client';
 
 export default function AIHelper({ accentColor = '#a55eea' }) {
