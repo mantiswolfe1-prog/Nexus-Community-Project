@@ -11,9 +11,9 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import AnimatedBackground from 'components/ui/AnimatedBackground';
-import GlassCard from 'components/ui/GlassCard';
-import NeonButton from 'components/ui/NeonButton';
+import AnimatedBackground from '../Components/UI/AnimatedBackground';
+import GlassCard from '../Components/UI/GlassCard';
+import NeonButton from '../Components/UI/NeonButton';
 
 const SOCIAL_SERVICES = [
   { 

@@ -14,11 +14,11 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import AnimatedBackground from 'components/ui/AnimatedBackground';
-import GlassCard from 'components/ui/GlassCard';
-import NeonButton from 'components/ui/NeonButton';
-import BrowserTab from 'components/browser/BrowserTab';
-import { Input } from 'components/ui/input';
+import AnimatedBackground from '../Components/UI/AnimatedBackground';
+import GlassCard from '../Components/UI/GlassCard';
+import NeonButton from '../Components/UI/NeonButton';
+import BrowserTab from '../Components/Browser/BrowserTab';
+import { Input } from '../Components/UI/input';
 
 const DEFAULT_BOOKMARKS = [
   { id: 1, title: 'Google', url: 'https://www.google.com', favicon: 'https://www.google.com/favicon.ico' },

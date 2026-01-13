@@ -21,13 +21,13 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import NeonButton from 'components/ui/NeonButton';
-import { Input } from 'components/ui/input';
-import { storage, session } from 'components/storage/clientStorage';
-import SoftParticleDrift from 'components/backgrounds/SoftParticleDrift';
-import SettingsSection from 'components/settings/SettingsSection';
-import SettingControl from 'components/settings/SettingControl';
-import DeviceProfileManager from 'components/settings/DeviceProfileManager';
+import NeonButton from '../Components/UI/NeonButton';
+import { Input } from '../Components/UI/input';
+import { storage, session } from '../Components/Storage/clientStorage';
+import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';
+import SettingsSection from '../Components/Settings/SettingsSection';
+import SettingControl from '../Components/Settings/SettingControl';
+import DeviceProfileManager from '../Components/Settings/DeviceProfileManager';
 
 export default function Settings() {
   const [settings, setSettings] = useState({

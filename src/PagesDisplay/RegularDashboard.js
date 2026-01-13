@@ -18,12 +18,12 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import DashboardTile from '../Components/Dashboard/DashboardTile';
-import QuickActions from 'components/dashboard/QuickActions';
-import GlassCard from 'components/ui/GlassCard';
-import { storage, session } from 'components/storage/clientStorage';
-import SoftParticleDrift from 'components/backgrounds/SoftParticleDrift';
-import FPSMonitor from 'components/performance/FPSMonitor';
-import { PerformanceProvider, usePerformance } from 'components/performance/PerformanceManager';
+import QuickActions from '../Components/Dashboard/QuickActions';
+import GlassCard from '../Components/UI/GlassCard';
+import { storage, session } from '../Components/Storage/clientStorage';
+import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';
+import FPSMonitor from '../Components/Performance/FPSMonitor';
+import { PerformanceProvider, usePerformance } from '../Components/Performance/PerformanceManager';
 
 function DashboardContent() {
   const [user, setUser] = useState(null);

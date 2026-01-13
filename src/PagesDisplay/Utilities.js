@@ -13,12 +13,12 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import AnimatedBackground from 'components/ui/AnimatedBackground';
-import GlassCard from 'components/ui/GlassCard';
-import NeonButton from 'components/ui/NeonButton';
-import Calculator from 'components/utilities/Calculator';
-import UnitConverter from 'components/utilities/UnitConverter';
-import Whiteboard from 'components/utilities/Whiteboard';
+import AnimatedBackground from '../Components/UI/AnimatedBackground';
+import GlassCard from '../Components/UI/GlassCard';
+import NeonButton from '../Components/UI/NeonButton';
+import Calculator from '../Components/Utilities/Calculator';
+import UnitConverter from '../Components/Utilities/UnitConverter';
+import Whiteboard from '../Components/Utilities/Whiteboard';
 
 export default function Utilities() {
   const [activeTab, setActiveTab] = useState('all');

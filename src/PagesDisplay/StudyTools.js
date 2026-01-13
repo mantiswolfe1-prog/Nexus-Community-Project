@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Pen, Calculator, Book, FileText, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import GlassCard from 'components/ui/GlassCard';
-import NeonButton from 'components/ui/NeonButton';
-import SoftParticleDrift from 'components/backgrounds/SoftParticleDrift';
-import Whiteboard from 'components/utilities/Whiteboard';
-import ScientificCalculator from 'components/study/ScientificCalculator';
-import Dictionary from 'components/study/Dictionary';
-import FormulaSheet from 'components/study/FormulaSheet';
-import AIChat from 'components/study/AIChat';
+import GlassCard from '../Components/UI/GlassCard';
+import NeonButton from '../Components/UI/NeonButton';
+import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';
+import Whiteboard from '../Components/Utilities/Whiteboard';
+import ScientificCalculator from '../Components/Study/ScientificCalculator';
+import Dictionary from '../Components/Study/Dictionary';
+import FormulaSheet from '../Components/Study/FormulaSheet';
+import AIChat from '../Components/Study/AIChat';
 
 const TOOLS = [
   { id: 'whiteboard', name: 'Whiteboard', icon: Pen, component: Whiteboard },

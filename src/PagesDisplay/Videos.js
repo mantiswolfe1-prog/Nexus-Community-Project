@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Play, Tv, Film, Video } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import AnimatedBackground from 'components/ui/AnimatedBackground';
-import GlassCard from 'components/ui/GlassCard';
-import NeonButton from 'components/ui/NeonButton';
-import ServiceCard from 'components/videos/ServiceCard';
+import AnimatedBackground from '../Components/UI/AnimatedBackground';
+import GlassCard from '../Components/UI/GlassCard';
+import NeonButton from '../Components/UI/NeonButton';
+import ServiceCard from '../Components/Videos/ServiceCard';
 
 const VIDEO_SERVICES = [
   { 
