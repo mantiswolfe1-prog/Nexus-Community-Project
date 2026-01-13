@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './Layout';
 import Landing from './PagesDisplay/Landing.js';
@@ -18,31 +18,65 @@ import Backgrounds from './PagesDisplay/Backgrounds.js';
 import Privacy from './PagesDisplay/Privacy.js';
 import Launcher from './PagesDisplay/Launcher';
 
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('App Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '20px', color: 'white', background: '#0a0a0f', minHeight: '100vh' }}>
+          <h1>Something went wrong</h1>
+          <pre style={{ color: '#ff6b6b', whiteSpace: 'pre-wrap' }}>
+            {this.state.error?.toString()}
+          </pre>
+          <button onClick={() => window.location.reload()} style={{ marginTop: '20px', padding: '10px 20px' }}>
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/launcher" element={<Launcher />} />
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/consent" element={<Consent />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<RegularDashboard />} />
-          <Route path="/admindashboard" element={<AdminDashboard />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/games" element={<Games />} />
-          <Route path="/studytools" element={<StudyTools />} />
-          <Route path="/music" element={<Music />} />
-          <Route path="/videos" element={<Videos />} />
-          <Route path="/browser" element={<Browser />} />
-          <Route path="/social" element={<Social />} />
-          <Route path="/utilities" element={<Utilities />} />
-          <Route path="/backgrounds" element={<Backgrounds />} />
-          <Route path="/privacy" element={<Privacy />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/launcher" element={<Launcher />} />
+            <Route path="/landing" element={<Landing />} />
+            <Route path="/consent" element={<Consent />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<RegularDashboard />} />
+            <Route path="/admindashboard" element={<AdminDashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/games" element={<Games />} />
+            <Route path="/studytools" element={<StudyTools />} />
+            <Route path="/music" element={<Music />} />
+            <Route path="/videos" element={<Videos />} />
+            <Route path="/browser" element={<Browser />} />
+            <Route path="/social" element={<Social />} />
+            <Route path="/utilities" element={<Utilities />} />
+            <Route path="/backgrounds" element={<Backgrounds />} />
+            <Route path="/privacy" element={<Privacy />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </ErrorBoundary>
   );
 }
 
