@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import GlassCard from '../UI/GlassCard';
+import GlassCard from '../UI/GlassCard.js';
 import { cn } from '../../utils';
 
 export default function DashboardTile({ 
