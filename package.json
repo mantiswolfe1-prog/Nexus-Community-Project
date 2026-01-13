@@ -2,7 +2,6 @@
   "name": "nexus-community-project",
   "version": "1.0.0",
   "description": "Privacy-first, local-only student hub",
-  "homepage": "https://mantiswolfe1-prog.github.io/Nexus-Community-Project",
   "main": "index.js",
   "scripts": {
     "start": "CI=false HOST=0.0.0.0 react-scripts start",
