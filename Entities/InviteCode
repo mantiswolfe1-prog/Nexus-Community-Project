@@ -1,0 +1,21 @@
+{
+  "name": "InviteCode",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "One-time invite code"
+    },
+    "isUsed": {
+      "type": "boolean",
+      "default": false
+    },
+    "usedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "code"
+  ]
+}

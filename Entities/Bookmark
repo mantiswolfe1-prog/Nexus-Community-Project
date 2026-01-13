@@ -1,0 +1,22 @@
+{
+  "name": "Bookmark",
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "favicon": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "url",
+    "title"
+  ]
+}

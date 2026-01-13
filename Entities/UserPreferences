@@ -1,0 +1,94 @@
+{
+  "name": "UserPreferences",
+  "type": "object",
+  "properties": {
+    "theme": {
+      "type": "string",
+      "enum": [
+        "dark",
+        "light",
+        "midnight",
+        "sunset"
+      ],
+      "default": "dark"
+    },
+    "accentColor": {
+      "type": "string",
+      "default": "#00f0ff"
+    },
+    "backgroundType": {
+      "type": "string",
+      "enum": [
+        "gradient",
+        "particles",
+        "static",
+        "custom"
+      ],
+      "default": "gradient"
+    },
+    "customBackground": {
+      "type": "string"
+    },
+    "dashboardLayout": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "w": {
+            "type": "number"
+          },
+          "h": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "favoriteGames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "favoriteMusic": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recentlyPlayed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "panicModeEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "lowEndMode": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": []
+}
