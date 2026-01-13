@@ -18,7 +18,9 @@ import {
   Trash2,
   Search,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
@@ -48,6 +50,8 @@ export default function Settings() {
   const [activeProfile, setActiveProfile] = useState('default');
   const [accessCode, setAccessCode] = useState('');
   const [inviteCode, setInviteCode] = useState('');
+  const [showInviteCode, setShowInviteCode] = useState(false);
+  const [showAccessCode, setShowAccessCode] = useState(false);
   const [regenerateCooldown, setRegenerateCooldown] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -196,8 +200,15 @@ export default function Settings() {
                   <h4 className="text-cyan-400 font-medium mb-2">Current Invite Code</h4>
                   <div className="flex items-center gap-3">
                     <div className="flex-1 p-3 rounded-lg bg-black/30 font-mono text-cyan-400 text-xl text-center tracking-wider font-bold">
-                      {inviteCode}
+                      {showInviteCode ? inviteCode : '••••••••'}
                     </div>
+                    <button
+                      onClick={() => setShowInviteCode(!showInviteCode)}
+                      className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-cyan-400 hover:text-cyan-300 transition-colors"
+                      title={showInviteCode ? 'Hide code' : 'Show code'}
+                    >
+                      {showInviteCode ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(inviteCode);
@@ -231,8 +242,15 @@ export default function Settings() {
                 <h4 className="text-white font-medium mb-2">Your Access Code</h4>
                 <div className="flex items-center gap-3">
                   <div className="flex-1 p-3 rounded-lg bg-black/30 font-mono text-cyan-400 text-lg text-center tracking-wider">
-                    {accessCode}
+                    {showAccessCode ? accessCode : '•'.repeat(accessCode.length || 8)}
                   </div>
+                  <button
+                    onClick={() => setShowAccessCode(!showAccessCode)}
+                    className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                    title={showAccessCode ? 'Hide code' : 'Show code'}
+                  >
+                    {showAccessCode ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                   <button
                     onClick={() => navigator.clipboard.writeText(accessCode)}
                     className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors text-sm"
