@@ -234,12 +234,40 @@ export default function Browser() {
           {/* Content Area */}
           <div className="flex-grow relative">
             {activeTab?.url ? (
-              <iframe
-                src={activeTab.url}
-                className="w-full h-full border-0 bg-white"
-                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                title={activeTab.title}
-              />
+              <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+                <motion.div 
+                  className="text-center p-8 max-w-md"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                >
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                    <Globe className="w-8 h-8 text-cyan-400" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">External Link</h3>
+                  <p className="text-white/70 mb-4">{activeTab.title}</p>
+                  <p className="text-sm text-white/50 mb-6">
+                    For security, external sites open in a new window
+                  </p>
+                  <NeonButton
+                    onClick={() => window.open(activeTab.url, '_blank')}
+                    className="gap-2"
+                  >
+                    <Globe className="w-4 h-4" />
+                    Open in New Window
+                  </NeonButton>
+                  <button
+                    onClick={() => {
+                      setTabs(prev => prev.map(t => 
+                        t.id === activeTabId ? { ...t, url: '', title: 'New Tab' } : t
+                      ));
+                      setUrlInput('');
+                    }}
+                    className="mt-3 text-sm text-white/40 hover:text-white/70 transition-colors"
+                  >
+                    Go back
+                  </button>
+                </motion.div>
+              </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center p-8">
                 {/* New Tab Page */}
