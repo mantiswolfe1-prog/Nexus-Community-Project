@@ -16,7 +16,7 @@ import Social from './PagesDisplay/Social.js';
 import Utilities from './PagesDisplay/Utilities.js';
 import Backgrounds from './PagesDisplay/Backgrounds.js';
 import Privacy from './PagesDisplay/Privacy.js';
-import Launcher from './PagesDisplay/Launcher';
+import Launcher from './PagesDisplay/Launcher.js';
 
 class ErrorBoundary extends Component {
   constructor(props) {
