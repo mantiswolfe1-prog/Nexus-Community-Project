@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { Key, AlertCircle, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
-import { storage, session } from '../../Components/Storage/clientStorage';
-import NeonButton from '../../Components/UI/NeonButton';
-import { Input } from '../../Components/UI/input';
+import { storage, session } from '../Components/Storage/clientStorage.js';
+import NeonButton from '../Components/UI/NeonButton.js';
+import { Input } from '../Components/UI/input.js';
 
 export default function Auth() {
   const [accessCode, setAccessCode] = useState('');
