@@ -1,21 +1,21 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './Layout';
-import Landing from './PagesDisplay/Landing';
-import Consent from './PagesDisplay/Consent';
-import Auth from './PagesDisplay/Auth';
-import RegularDashboard from './PagesDisplay/RegularDashboard';
-import AdminDashboard from './PagesDisplay/AdminDashboard';
-import Settings from './PagesDisplay/Settings';
-import Games from './PagesDisplay/Games';
-import StudyTools from './PagesDisplay/StudyTools';
-import Music from './PagesDisplay/Music';
-import Videos from './PagesDisplay/Videos';
-import Browser from './PagesDisplay/Browser';
-import Social from './PagesDisplay/Social';
-import Utilities from './PagesDisplay/Utilities';
-import Backgrounds from './PagesDisplay/Backgrounds';
-import Privacy from './PagesDisplay/Privacy';
+import Landing from './PagesDisplay/Landing.js';
+import Consent from './PagesDisplay/Consent.js';
+import Auth from './PagesDisplay/Auth.js';
+import RegularDashboard from './PagesDisplay/RegularDashboard.js';
+import AdminDashboard from './PagesDisplay/AdminDashboard.js';
+import Settings from './PagesDisplay/Settings.js';
+import Games from './PagesDisplay/Games.js';
+import StudyTools from './PagesDisplay/StudyTools.js';
+import Music from './PagesDisplay/Music.js';
+import Videos from './PagesDisplay/Videos.js';
+import Browser from './PagesDisplay/Browser.js';
+import Social from './PagesDisplay/Social.js';
+import Utilities from './PagesDisplay/Utilities.js';
+import Backgrounds from './PagesDisplay/Backgrounds.js';
+import Privacy from './PagesDisplay/Privacy.js';
 import Launcher from './PagesDisplay/Launcher';
 
 function App() {
