@@ -220,7 +220,7 @@ function DashboardContent() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <Sparkles className="w-5 h-5" style={{ color: accentColor }} />
+                <Sparkles className="w-5 h-5" style={{ color: settings?.theme?.accent || '#00f0ff' }} />
                 <span className="text-white/50 text-sm">
                   {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </span>
