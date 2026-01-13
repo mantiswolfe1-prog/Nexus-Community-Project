@@ -1,0 +1,36 @@
+{
+  "name": "Flashcard",
+  "type": "object",
+  "properties": {
+    "question": {
+      "type": "string"
+    },
+    "answer": {
+      "type": "string"
+    },
+    "deck": {
+      "type": "string"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ]
+    },
+    "timesReviewed": {
+      "type": "number",
+      "default": 0
+    },
+    "lastReviewed": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "question",
+    "answer",
+    "deck"
+  ]
+}

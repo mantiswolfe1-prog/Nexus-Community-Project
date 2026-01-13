@@ -1,0 +1,24 @@
+{
+  "name": "AccessCode",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Site entry access code"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "usageCount": {
+      "type": "number",
+      "default": 0
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "code"
+  ]
+}

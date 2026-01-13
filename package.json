@@ -1,0 +1,44 @@
+{
+  "name": "nexus-community-project",
+  "version": "1.0.0",
+  "description": "Privacy-first, local-only student hub",
+  "homepage": "https://mantiswolfe1-prog.github.io/Nexus-Community-Project",
+  "main": "index.js",
+  "scripts": {
+    "start": "CI=false HOST=0.0.0.0 react-scripts start",
+    "build": "react-scripts build",
+    "serve": "npm run build && python3 -m http.server 3000 --directory build",
+    "dev": "CI=false HOST=0.0.0.0 react-scripts start",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0",
+    "framer-motion": "^10.12.0",
+    "lucide-react": "^0.263.0",
+    "clsx": "^1.2.1",
+    "tailwind-merge": "^1.10.0"
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "tailwindcss": "^3.2.7",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

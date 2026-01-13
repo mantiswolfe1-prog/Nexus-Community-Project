@@ -1,0 +1,20 @@
+{
+  "name": "BanList",
+  "type": "object",
+  "properties": {
+    "identifier": {
+      "type": "string",
+      "description": "Minimal user identifier for ban"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "bannedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "identifier"
+  ]
+}

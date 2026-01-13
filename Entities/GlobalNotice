@@ -1,0 +1,20 @@
+{
+  "name": "GlobalNotice",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "message"
+  ]
+}
