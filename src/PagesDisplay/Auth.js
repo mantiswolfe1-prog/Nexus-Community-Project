@@ -22,6 +22,15 @@ export default function Auth() {
     }
   }, [navigate]);
 
+  const generateRandomCode = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setAccessCode(code);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -122,6 +131,13 @@ export default function Auth() {
               <p className="text-xs text-white/40 mt-2 text-center">
                 New? Just enter any code to create your account.
               </p>
+              <button
+                type="button"
+                onClick={generateRandomCode}
+                className="w-full mt-2 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                ✨ Generate random code for me
+              </button>
             </div>
 
             <label className="flex items-center justify-center gap-2 text-sm text-white/60 cursor-pointer">
