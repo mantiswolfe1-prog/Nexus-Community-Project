@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Cpu, Settings, Moon, Sun } from 'lucide-react';
-import NeonButton from '@/components/ui/NeonButton';
+import NeonButton from '../UI/NeonButton.js';
 
 export default function QuickActions({ 
   accentColor = '#00f0ff',

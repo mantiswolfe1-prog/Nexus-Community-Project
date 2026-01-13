@@ -14,10 +14,10 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import AnimatedBackground from '../Components/UI/AnimatedBackground';
+import AnimatedBackground from '../Components/UI/AnimatedBackground.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
-import BrowserTab from '../Components/Browser/BrowserTab';
+import BrowserTab from '../Components/Browser/BrowserTab.js';
 import { Input } from '../Components/UI/input';
 
 const DEFAULT_BOOKMARKS = [

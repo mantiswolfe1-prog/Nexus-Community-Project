@@ -7,7 +7,7 @@ import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
 import { Slider } from '../Components/UI/slider';
 import { Label } from '../Components/UI/label';
-import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';
+import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
 
 const BACKGROUNDS = [
   {

@@ -18,11 +18,11 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import DashboardTile from '../Components/Dashboard/DashboardTile.js';
-import QuickActions from '../Components/Dashboard/QuickActions';
+import QuickActions from '../Components/Dashboard/QuickActions.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import { storage, session } from '../Components/Storage/clientStorage.js';
-import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';
-import FPSMonitor from '../Components/Performance/FPSMonitor';
+import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
+import FPSMonitor from '../Components/Performance/FPSMonitor.js';
 import { PerformanceProvider, usePerformance } from '../Components/Performance/PerformanceManager.js';
 
 function DashboardContent() {

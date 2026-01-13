@@ -5,12 +5,12 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
-import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';
-import Whiteboard from '../Components/Utilities/Whiteboard';
-import ScientificCalculator from '../Components/Study/ScientificCalculator';
-import Dictionary from '../Components/Study/Dictionary';
-import FormulaSheet from '../Components/Study/FormulaSheet';
-import AIChat from '../Components/Study/AIChat';
+import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
+import Whiteboard from '../Components/Utilities/Whiteboard.js';
+import ScientificCalculator from '../Components/Study/ScientificCalculator.js';
+import Dictionary from '../Components/Study/Dictionary.js';
+import FormulaSheet from '../Components/Study/FormulaSheet.js';
+import AIChat from '../Components/Study/AIChat.js';
 
 const TOOLS = [
   { id: 'whiteboard', name: 'Whiteboard', icon: Pen, component: Whiteboard },

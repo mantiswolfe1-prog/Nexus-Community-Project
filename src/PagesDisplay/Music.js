@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Music as MusicIcon, Radio, Disc, Heart, Clock, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import AnimatedBackground from '../Components/UI/AnimatedBackground';
+import AnimatedBackground from '../Components/UI/AnimatedBackground.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
-import MusicPlayer from '../Components/Music/MusicPlayer';
+import MusicPlayer from '../Components/Music/MusicPlayer.js';
 
 const MUSIC_SERVICES = [
   { 

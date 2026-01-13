@@ -84,7 +84,6 @@ export default function SoftParticleDrift({
           }
         });
 
-        // Draw subtle connections
         if (!lowEndMode) {
           particlesRef.current.forEach((p1, i) => {
             particlesRef.current.slice(i + 1, i + 6).forEach(p2 => {

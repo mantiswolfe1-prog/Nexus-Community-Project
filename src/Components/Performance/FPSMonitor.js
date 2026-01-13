@@ -7,7 +7,7 @@ export default function FPSMonitor({
   onPerformanceChange 
 }) {
   const [fps, setFps] = useState(60);
-  const [status, setStatus] = useState('stable'); // stable, adjusting, throttled
+  const [status, setStatus] = useState('stable');
   const frameTimesRef = useRef([]);
   const lastFrameTimeRef = useRef(performance.now());
   const animationRef = useRef(null);
@@ -21,22 +21,19 @@ export default function FPSMonitor({
       const delta = now - lastFrameTimeRef.current;
       lastFrameTimeRef.current = now;
 
-      // Add to rolling average (last 60 frames)
       frameTimesRef.current.push(delta);
       if (frameTimesRef.current.length > 60) {
         frameTimesRef.current.shift();
       }
 
-      // Calculate average FPS
       if (frameTimesRef.current.length >= 10) {
         const avgDelta = frameTimesRef.current.reduce((a, b) => a + b, 0) / frameTimesRef.current.length;
         const currentFPS = Math.round(1000 / avgDelta);
         setFps(currentFPS);
 
-        // Performance status logic
         if (currentFPS < 30) {
           lowFPSCountRef.current++;
-          if (lowFPSCountRef.current > 120) { // Low for ~2 seconds
+          if (lowFPSCountRef.current > 120) {
             setStatus('throttled');
             onPerformanceChange?.('low');
           } else if (lowFPSCountRef.current > 60) {

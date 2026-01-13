@@ -6,7 +6,7 @@ import { createPageUrl } from 'utils';
 import { session } from '../Components/Storage/clientStorage.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
-import AnimatedBackground from '../Components/UI/AnimatedBackground';
+import AnimatedBackground from '../Components/UI/AnimatedBackground.js';
 
 export default function AdminDashboard() {
   const [accessCodes, setAccessCodes] = useState([]);

@@ -1,2 +1,0 @@
-// Shim for legacy imports; the real component lives in clientStorage.js
-export { storage, session } from './clientStorage.js';

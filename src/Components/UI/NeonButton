@@ -1,2 +1,0 @@
-// Temporary shim to keep legacy imports working; the real component lives in NeonButton.js
-export { default } from './NeonButton.js';

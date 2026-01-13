@@ -24,10 +24,10 @@ import { createPageUrl } from 'utils';
 import NeonButton from '../Components/UI/NeonButton.js';
 import { Input } from '../Components/UI/input';
 import { storage, session } from '../Components/Storage/clientStorage.js';
-import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift';
-import SettingsSection from '../Components/Settings/SettingsSection';
-import SettingControl from '../Components/Settings/SettingControl';
-import DeviceProfileManager from '../Components/Settings/DeviceProfileManager';
+import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
+import SettingsSection from '../Components/Settings/SettingsSection.js';
+import SettingControl from '../Components/Settings/SettingControl.js';
+import DeviceProfileManager from '../Components/Settings/DeviceProfileManager.js';
 
 export default function Settings() {
   const [settings, setSettings] = useState({

@@ -22,7 +22,6 @@ export default function AnimatedBackground({ type = 'gradient', accentColor = '#
     resize();
     window.addEventListener('resize', resize);
     
-    // Create particles
     for (let i = 0; i < 50; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -52,7 +51,6 @@ export default function AnimatedBackground({ type = 'gradient', accentColor = '#
         ctx.fill();
       });
       
-      // Draw connecting lines
       particles.forEach((p1, i) => {
         particles.slice(i + 1).forEach(p2 => {
           const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
