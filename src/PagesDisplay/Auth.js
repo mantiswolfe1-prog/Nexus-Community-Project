@@ -80,10 +80,15 @@ export default function Auth() {
         return;
       }
 
-      // Owner login
+      // Owner login - works like regular account
       if (roleData.role === 'owner') {
+        const existingUser = await storage.loadUser(code);
+        if (!existingUser) {
+          const username = `Owner_Admin`;
+          await storage.saveUser(username, code);
+        }
         session.set(code, remember, 'owner');
-        navigate(createPageUrl('AdminDashboard'));
+        navigate(createPageUrl('Dashboard'));
         return;
       }
 

@@ -20,7 +20,8 @@ import {
   RefreshCw,
   AlertCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  Check
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
@@ -200,6 +201,55 @@ export default function Settings() {
           <div className="space-y-4">
             {/* Discord Verification */}
             <DiscordVerification role={userRole} />
+
+            {/* Role Upgrade Options */}
+            <div className="p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/20">
+              <h4 className="text-white font-medium mb-3">Upgrade Your Account</h4>
+              
+              {userRole === 'guest' && (
+                <div className="space-y-2">
+                  <p className="text-white/60 text-sm mb-3">
+                    Ready to unlock premium features?
+                  </p>
+                  <a
+                    href="https://discord.gg/nexushub"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block"
+                  >
+                    <NeonButton className="w-full">
+                      ✨ Ready to Verify? Join Discord
+                    </NeonButton>
+                  </a>
+                  <p className="text-xs text-white/40 mt-2">
+                    Verify your Discord membership to become a Verified user with full access!
+                  </p>
+                </div>
+              )}
+              
+              {userRole === 'verified' && (
+                <div className="space-y-2">
+                  <p className="text-white/60 text-sm mb-3">
+                    Want admin privileges? Contact the owner for an admin code.
+                  </p>
+                  <div className="p-3 rounded-lg bg-black/20 border border-white/10">
+                    <p className="text-white/70 text-sm">
+                      <strong>Admin Code:</strong> <span className="font-mono text-cyan-400">ADMIN-NEXUS</span>
+                    </p>
+                    <p className="text-xs text-white/40 mt-1">
+                      You must be an admin on the Discord server to use this code.
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {(userRole === 'admin' || userRole === 'owner') && (
+                <div className="flex items-center gap-2 text-green-400">
+                  <Check className="w-5 h-5" />
+                  <p className="text-sm">You have {userRole === 'owner' ? 'Owner' : 'Admin'} privileges - highest access level!</p>
+                </div>
+              )}
+            </div>
 
             {/* Admin Invite Code Management */}
             {isAdmin && (
