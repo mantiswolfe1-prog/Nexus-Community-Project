@@ -13,7 +13,7 @@ import {
   Globe,
   X
 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
 import { useNavigateBack } from '../hooks/useNavigateBack.js';
 import AnimatedBackground from '../Components/UI/AnimatedBackground.js';
@@ -31,6 +31,7 @@ const DEFAULT_BOOKMARKS = [
 
 export default function Browser() {
   const location = useLocation();
+  const navigate = useNavigate();
   const goBack = useNavigateBack();
   const [tabs, setTabs] = useState([
     { id: 1, title: 'New Tab', url: '', loading: false }
@@ -40,7 +41,8 @@ export default function Browser() {
   const [bookmarks, setBookmarks] = useState(DEFAULT_BOOKMARKS);
   const [showBookmarks, setShowBookmarks] = useState(true);
   const [settings, setSettings] = useState({ browser: { searchEngine: 'google' } });
-    const [iframeError, setIframeError] = useState(false);
+  const [iframeError, setIframeError] = useState(false);
+  const [lastRequestedUrl, setLastRequestedUrl] = useState('');
 
   const accentColor = '#3498db';
   const activeTab = tabs.find(t => t.id === activeTabId);
@@ -65,6 +67,18 @@ export default function Browser() {
       navigateTo(location.state.url);
     }
   }, [location.state]);
+
+  // While showing error screen, allow pressing "c" to jump to Landing
+  useEffect(() => {
+    if (!iframeError) return;
+    const handleKey = (e) => {
+      if (e.key && e.key.toLowerCase() === 'c') {
+        navigate(createPageUrl('Landing'));
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [iframeError, navigate]);
 
   const loadSettings = async () => {
     try {
@@ -106,38 +120,31 @@ export default function Browser() {
 
   const navigateTo = (url) => {
     if (!url) return;
-    
-      // Reset iframe error state
-      setIframeError(false);
-    
-    // Add https if not present
+
+    // Always force a fresh tab that points to about:blank, immediately close the old one
     let finalUrl = url;
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      // Check if it's a search query or URL
       if (url.includes('.') && !url.includes(' ')) {
         finalUrl = 'https://' + url;
       } else {
-        // Use selected search engine
         const searchEngine = settings.browser?.searchEngine || 'google';
         const searchUrl = searchEngines[searchEngine] || searchEngines.google;
         finalUrl = `${searchUrl}${encodeURIComponent(url)}`;
       }
     }
 
-    setTabs(prev => prev.map(t => 
-      t.id === activeTabId 
-        ? { ...t, url: finalUrl, title: new URL(finalUrl).hostname, loading: true }
-        : t
-    ));
+    const newTab = {
+      id: Date.now(),
+      title: new URL(finalUrl).hostname || finalUrl,
+      url: 'about:blank',
+      loading: false
+    };
 
-    // Simulate loading
-    setTimeout(() => {
-      setTabs(prev => prev.map(t => 
-        t.id === activeTabId 
-          ? { ...t, loading: false }
-          : t
-      ));
-    }, 1000);
+    setTabs([newTab]);
+    setActiveTabId(newTab.id);
+    setUrlInput('');
+    setIframeError(true); // immediately show the error screen
+    setLastRequestedUrl(finalUrl);
   };
 
   const handleSubmit = (e) => {
@@ -297,9 +304,9 @@ export default function Browser() {
                           <X className="w-8 h-8 text-red-400" />
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2">Can't Display This Site</h3>
-                        <p className="text-white/70 mb-2">{activeTab.title}</p>
+                        <p className="text-white/70 mb-2">{lastRequestedUrl || activeTab.title}</p>
                         <p className="text-sm text-white/50 mb-6">
-                          This site blocks embedding for security. Open it directly instead.
+                          Opening this site here isn't supported. You can open it directly or go back.
                         </p>
                         <div className="space-y-2">
                           <NeonButton
