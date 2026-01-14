@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Play, Tv, Film, Video } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
+import { useNavigateBack } from '../hooks/useNavigateBack.js';
 import AnimatedBackground from '../Components/UI/AnimatedBackground.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
@@ -85,6 +86,7 @@ const VIDEO_SERVICES = [
 
 export default function Videos() {
   const navigate = useNavigate();
+  const goBack = useNavigateBack();
   const [activeService, setActiveService] = useState(null);
   const [connectedServices, setConnectedServices] = useState(['youtube']);
   const [category, setCategory] = useState('all');
@@ -146,11 +148,9 @@ export default function Videos() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-4 mb-6">
-            <Link to={createPageUrl('Dashboard')}>
-              <NeonButton variant="ghost" size="icon">
-                <ArrowLeft className="w-5 h-5" />
-              </NeonButton>
-            </Link>
+            <NeonButton variant="ghost" size="icon" onClick={goBack}>
+              <ArrowLeft className="w-5 h-5" />
+            </NeonButton>
             <div>
               <h1 className="text-3xl font-bold text-white">Videos</h1>
               <p className="text-white/50">Stream from your favorite platforms</p>

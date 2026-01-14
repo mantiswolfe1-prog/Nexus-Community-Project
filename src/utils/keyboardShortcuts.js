@@ -29,12 +29,17 @@ export function shouldIgnoreShortcut(event) {
   const target = event.target;
   const tagName = target.tagName.toLowerCase();
   
-  // Ignore if user is typing in input/textarea
-  if (tagName === 'input' || tagName === 'textarea' || target.isContentEditable) {
+  // Ignore if user is typing in input/textarea/select
+  if (tagName === 'input' || tagName === 'textarea' || tagName === 'select' || target.isContentEditable) {
     return true;
   }
   
-  // Ignore if modifier keys are pressed (Ctrl, Alt, Meta)
+  // Ignore if user is in a contenteditable element (like text editors)
+  if (target.closest('[contenteditable="true"]')) {
+    return true;
+  }
+  
+  // Modifier keys (Ctrl, Alt, Meta) should not trigger shortcuts
   // except for Escape which should always work
   if (event.key !== 'Escape' && (event.ctrlKey || event.altKey || event.metaKey)) {
     return true;

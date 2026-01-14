@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Star, Clock, TrendingUp, Shuffle, Tag } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
+import { useNavigateBack } from '../hooks/useNavigateBack.js';
+import { useNavigateBack } from '../hooks/useNavigateBack.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
 import GameCard from '../Components/Games/GameCard.js';
@@ -615,6 +617,7 @@ const SAMPLE_GAMES = [
 
 export default function Games() {
   const navigate = useNavigate();
+  const goBack = useNavigateBack();
   const [search, setSearch] = useState('');
   const [performance, setPerformance] = useState('all');
   const [selectedTags, setSelectedTags] = useState([]);
@@ -745,11 +748,9 @@ export default function Games() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-4 mb-6">
-            <Link to={createPageUrl('Dashboard')}>
-              <NeonButton variant="ghost" size="icon">
-                <ArrowLeft className="w-5 h-5" />
-              </NeonButton>
-            </Link>
+            <NeonButton variant="ghost" size="icon" onClick={goBack}>
+              <ArrowLeft className="w-5 h-5" />
+            </NeonButton>
             <div>
               <h1 className="text-3xl font-bold text-white">Games</h1>
               <p className="text-white/50">Browser games from top platforms</p>

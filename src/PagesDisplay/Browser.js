@@ -13,8 +13,9 @@ import {
   Globe,
   X
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { createPageUrl } from 'utils';
+import { useNavigateBack } from '../hooks/useNavigateBack.js';
 import AnimatedBackground from '../Components/UI/AnimatedBackground.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
@@ -30,6 +31,7 @@ const DEFAULT_BOOKMARKS = [
 
 export default function Browser() {
   const location = useLocation();
+  const goBack = useNavigateBack();
   const [tabs, setTabs] = useState([
     { id: 1, title: 'New Tab', url: '', loading: false }
   ]);
@@ -193,11 +195,9 @@ export default function Browser() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-4 mb-4">
-            <Link to={createPageUrl('Dashboard')}>
-              <NeonButton variant="ghost" size="icon">
-                <ArrowLeft className="w-5 h-5" />
-              </NeonButton>
-            </Link>
+            <NeonButton variant="ghost" size="icon" onClick={goBack}>
+              <ArrowLeft className="w-5 h-5" />
+            </NeonButton>
             <div>
               <h1 className="text-2xl font-bold text-white">Browser</h1>
               <p className="text-white/50 text-sm">Private sandboxed browsing</p>
