@@ -3,7 +3,7 @@ import { Send } from 'lucide-react';
 import GlassCard from '../UI/GlassCard.js';
 import { Input } from '../UI/input.js';
 import NeonButton from '../UI/NeonButton.js';
-import { getPersonalityResponse, getTimedTip } from '../../utils/personalities.js';
+import { getPersonalityResponse, getTimedTip } from '../../../utils/personalities.js';
 import { storage } from '../Storage/clientStorage.js';
 
 export default function AIChat({ accentColor }) {

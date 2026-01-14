@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RotateCcw, ChevronLeft, ChevronRight, Check, X, Plus } from 'lucide-react';
-import GlassCard from '../../UI/GlassCard';
-import NeonButton from '../../UI/NeonButton';
-import { Button } from '../../UI/button';
-import { Input } from '../../UI/input';
-import { Textarea } from '../../UI/textarea';
+import GlassCard from '../UI/GlassCard';
+import NeonButton from '../UI/NeonButton';
+import { Button } from '../UI/button';
+import { Input } from '../UI/input';
+import { Textarea } from '../UI/textarea';
 import {
   Dialog,
   DialogContent,
