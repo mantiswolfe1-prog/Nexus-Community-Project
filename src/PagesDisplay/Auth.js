@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Key, AlertCircle, Shield } from 'lucide-react';
+import { Key, AlertCircle, Shield, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils.js';
 import { storage, session } from '../Components/Storage/clientStorage.js';
@@ -14,13 +14,39 @@ export default function Auth() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const ADMIN_CODES = ['0915', '091587'];
-
   useEffect(() => {
     if (!sessionStorage.getItem('nexus_consent_accepted')) {
       navigate(createPageUrl('Landing'));
     }
   }, [navigate]);
+
+  const handleGuestLogin = async () => {
+    setLoading(true);
+    try {
+      await storage.init();
+      const guestCode = `GUEST_${Date.now()}`;
+      
+      // Create guest session
+      session.set(guestCode, false, 'guest');
+      
+      await storage.saveSettings({
+        theme: { background: '#0a0a0f', accent: '#00f0ff', text: '#ffffff' },
+        background: { type: 'soft-particle-drift', particleCount: 50, speed: 0.5, opacity: 0.4, blur: 2 },
+        performance: { targetFPS: 60, ramLimit: 1024, animationScale: 1, widgetLimit: 3, adaptivePerf: true, showFPS: false },
+        games: { fullscreenOnLaunch: true, escToClose: true, lazyLoadStrength: 'medium' },
+        widgets: { enabled: false, spotify: false, youtube: false, tiktok: false, autoDisable: true },
+        aiTools: { enabled: false, autoSuggest: true },
+        lowEndMode: false
+      });
+      
+      navigate(createPageUrl('Dashboard'));
+    } catch (err) {
+      setError('Failed to start guest mode');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -42,32 +68,55 @@ export default function Auth() {
         return;
       }
 
-      // Admin login - skip storage check
-      if (ADMIN_CODES.includes(code)) {
-        session.set(code, remember, true);
+      await storage.init();
+      
+      // Check role
+      const roleData = storage.getUserRole(code);
+      
+      // Check if banned
+      if (roleData.banned) {
+        setError('This account has been banned. Contact the administrator.');
+        setLoading(false);
+        return;
+      }
+
+      // Owner login
+      if (roleData.role === 'owner') {
+        session.set(code, remember, 'owner');
         navigate(createPageUrl('AdminDashboard'));
         return;
       }
 
-      // Initialize storage for normal users
-      await storage.init();
+      // Admin login
+      if (roleData.role === 'admin') {
+        const existingUser = await storage.loadUser(code);
+        if (!existingUser) {
+          const username = `Admin_${code.slice(0, 4).toUpperCase()}`;
+          await storage.saveUser(username, code);
+        }
+        session.set(code, remember, 'admin');
+        navigate(createPageUrl('Dashboard'));
+        return;
+      }
+
+      // Check existing user
       const existingUser = await storage.loadUser(code);
       
       if (existingUser) {
-        // Returning user - login with existing data
-        session.set(code, remember, false);
+        // Returning verified user
+        session.set(code, remember, roleData.verified ? 'verified' : 'guest');
         navigate(createPageUrl('Dashboard'));
       } else {
-        // New user - check if code matches current invite code
+        // New user - check invite code
         const currentInviteCode = storage.getInviteCode();
         
         if (code !== currentInviteCode) {
-          setError('Invalid access code. Please ask the admin for the current code.');
+          setError('Invalid access code. Please ask the admin for the current code or try Guest mode.');
           setLoading(false);
           return;
         }
         
-        // Valid invite code - create account and regenerate
+        // Valid invite code - create unverified account
         const username = `Nexus_${code.slice(0, 4).toUpperCase()}`;
         await storage.saveUser(username, code);
         
@@ -81,10 +130,13 @@ export default function Auth() {
           lowEndMode: false
         });
 
-        // Regenerate invite code for next user
+        // Save as unverified user
+        storage.saveUserRole(code, { role: 'guest', verified: false });
+
+        // Regenerate invite code
         storage.regenerateInviteCode();
 
-        session.set(code, remember, false);
+        session.set(code, remember, 'guest');
         navigate(createPageUrl('Dashboard'));
       }
     } catch (err) {
@@ -182,7 +234,21 @@ export default function Auth() {
             </NeonButton>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-white/10 text-center text-xs text-white/30">
+          <div className="mt-6 pt-6 border-t border-white/10">
+            <button
+              onClick={handleGuestLogin}
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all text-sm flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <UserPlus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              Try Nexus in Guest Mode
+            </button>
+            <p className="text-xs text-white/40 mt-2 text-center">
+              Limited features • Verify on Discord for full access
+            </p>
+          </div>
+
+          <div className="mt-4 text-center text-xs text-white/30">
             All data stored locally. No account required.
           </div>
         </div>

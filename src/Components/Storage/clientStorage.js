@@ -119,6 +119,85 @@ export const storage = {
     localStorage.setItem('nexus_invite_code', code);
     return code;
   },
+
+  // Role management
+  getRoleData() {
+    const data = localStorage.getItem('nexus_roles');
+    if (!data) {
+      // Initialize with owner role
+      const roles = {
+        owner: 'NEXUS-OWNER-2026',
+        admin: 'ADMIN-NEXUS',
+        users: [] // { code, role, discordId, verified, banned }
+      };
+      localStorage.setItem('nexus_roles', JSON.stringify(roles));
+      return roles;
+    }
+    return JSON.parse(data);
+  },
+
+  saveRoleData(data) {
+    localStorage.setItem('nexus_roles', JSON.stringify(data));
+  },
+
+  getUserRole(accessCode) {
+    const roles = this.getRoleData();
+    
+    // Check owner
+    if (accessCode === roles.owner) {
+      return { role: 'owner', verified: true, banned: false };
+    }
+    
+    // Check admin
+    if (accessCode === roles.admin) {
+      return { role: 'admin', verified: true, banned: false };
+    }
+    
+    // Check registered users
+    const user = roles.users.find(u => u.code === accessCode);
+    if (user) {
+      return { role: user.role || 'verified', verified: user.verified || false, banned: user.banned || false };
+    }
+    
+    // Default guest
+    return { role: 'guest', verified: false, banned: false };
+  },
+
+  saveUserRole(accessCode, roleData) {
+    const roles = this.getRoleData();
+    const existingIndex = roles.users.findIndex(u => u.code === accessCode);
+    
+    if (existingIndex >= 0) {
+      roles.users[existingIndex] = { ...roles.users[existingIndex], ...roleData };
+    } else {
+      roles.users.push({ code: accessCode, ...roleData });
+    }
+    
+    this.saveRoleData(roles);
+  },
+
+  banUser(accessCode) {
+    const roles = this.getRoleData();
+    const user = roles.users.find(u => u.code === accessCode);
+    if (user) {
+      user.banned = true;
+      this.saveRoleData(roles);
+    }
+  },
+
+  unbanUser(accessCode) {
+    const roles = this.getRoleData();
+    const user = roles.users.find(u => u.code === accessCode);
+    if (user) {
+      user.banned = false;
+      this.saveRoleData(roles);
+    }
+  },
+
+  getAllUsers() {
+    const roles = this.getRoleData();
+    return roles.users;
+  },
   
   async saveSettings(settings) {
     const db = await initDB();
@@ -232,8 +311,8 @@ export const storage = {
 
 // Session management
 export const session = {
-  set(accountCode, remember = false, isAdmin = false) {
-    const data = JSON.stringify({ code: accountCode, admin: isAdmin });
+  set(accountCode, remember = false, role = 'guest') {
+    const data = JSON.stringify({ code: accountCode, role: role });
     if (remember) {
       localStorage.setItem('nexus_session', btoa(data));
     } else {
@@ -253,18 +332,36 @@ export const session = {
       return null;
     }
   },
-  
-  isAdmin() {
+
+  getRole() {
     const persistent = localStorage.getItem('nexus_session');
     const temp = sessionStorage.getItem('nexus_session');
     const encoded = persistent || temp;
-    if (!encoded) return false;
+    if (!encoded) return 'guest';
     try {
       const data = JSON.parse(atob(encoded));
-      return data.admin === true;
+      return data.role || 'guest';
     } catch {
-      return false;
+      return 'guest';
     }
+  },
+  
+  isAdmin() {
+    const role = this.getRole();
+    return role === 'admin' || role === 'owner';
+  },
+
+  isOwner() {
+    return this.getRole() === 'owner';
+  },
+
+  isVerified() {
+    const role = this.getRole();
+    return role === 'verified' || role === 'admin' || role === 'owner';
+  },
+
+  isGuest() {
+    return this.getRole() === 'guest';
   },
   
   clear() {

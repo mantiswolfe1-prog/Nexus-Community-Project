@@ -31,6 +31,7 @@ import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
 import SettingsSection from '../Components/Settings/SettingsSection.js';
 import SettingControl from '../Components/Settings/SettingControl.js';
 import DeviceProfileManager from '../Components/Settings/DeviceProfileManager.js';
+import DiscordVerification from '../Components/Settings/DiscordVerification.js';
 
 export default function Settings() {
   const [settings, setSettings] = useState({
@@ -54,6 +55,7 @@ export default function Settings() {
   const [showAccessCode, setShowAccessCode] = useState(false);
   const [regenerateCooldown, setRegenerateCooldown] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userRole, setUserRole] = useState('guest');
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
@@ -75,10 +77,12 @@ export default function Settings() {
         return;
       }
 
+      const role = session.getRole();
+      setUserRole(role);
       setIsAdmin(session.isAdmin());
       setAccessCode(accountCode);
       
-      // Load invite code if admin
+      // Load invite code if admin or owner
       if (session.isAdmin()) {
         const code = storage.getInviteCode();
         setInviteCode(code);
@@ -189,15 +193,19 @@ export default function Settings() {
     const allSections = [
       {
         id: 'account',
-        title: 'Account & Access',
+        title: 'Account & Verification',
         icon: Key,
-        keywords: ['account', 'access', 'code', 'login', 'regenerate'],
+        keywords: ['account', 'access', 'code', 'login', 'regenerate', 'discord', 'verify'],
         custom: (
           <div className="space-y-4">
-            {isAdmin ? (
-              <>
+            {/* Discord Verification */}
+            <DiscordVerification role={userRole} />
+
+            {/* Admin Invite Code Management */}
+            {isAdmin && (
+              <div className="space-y-4 pt-4 border-t border-white/10">
                 <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-                  <h4 className="text-cyan-400 font-medium mb-2">Current Invite Code</h4>
+                  <h4 className="text-cyan-400 font-medium mb-2">Admin Invite Code</h4>
                   <div className="flex items-center gap-3">
                     <div className="flex-1 p-3 rounded-lg bg-black/30 font-mono text-cyan-400 text-xl text-center tracking-wider font-bold">
                       {showInviteCode ? inviteCode : '••••••••'}
@@ -236,9 +244,12 @@ export default function Settings() {
                     {regenerateCooldown > 0 ? `Wait ${regenerateCooldown}s` : 'Regenerate Invite Code'}
                   </NeonButton>
                 </div>
-              </>
-            ) : (
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+              </div>
+            )}
+
+            {/* User Access Code */}
+            {!isAdmin && (
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10 mt-4 border-t border-white/10">
                 <h4 className="text-white font-medium mb-2">Your Access Code</h4>
                 <div className="flex items-center gap-3">
                   <div className="flex-1 p-3 rounded-lg bg-black/30 font-mono text-cyan-400 text-lg text-center tracking-wider">

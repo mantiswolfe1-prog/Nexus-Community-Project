@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Users, Key, Ban, AlertTriangle, LogOut, Trash2, Activity, Cpu } from 'lucide-react';
+import { Shield, Users, Key, Ban, AlertTriangle, LogOut, Trash2, Activity, Cpu, Crown, UserX, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
-import { session } from '../Components/Storage/clientStorage.js';
+import { session, storage } from '../Components/Storage/clientStorage.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
 import AnimatedBackground from '../Components/UI/AnimatedBackground.js';
 
 export default function AdminDashboard() {
+  const [users, setUsers] = useState([]);
   const [accessCodes, setAccessCodes] = useState([]);
   const [banList, setBanList] = useState([]);
   const [notices, setNotices] = useState([]);
   const [stats, setStats] = useState({ fps: 60, ram: 512, activeUsers: 0 });
   const [loading, setLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,16 +23,17 @@ export default function AdminDashboard() {
       navigate(createPageUrl('Landing'));
       return;
     }
+    setIsOwner(session.isOwner());
     loadAdminData();
     measurePerformance();
   }, [navigate]);
 
   const loadAdminData = async () => {
     try {
-      // Mock data - base44 removed
-      setAccessCodes([]);
-      setBanList([]);
-      setNotices([]);
+      await storage.init();
+      const allUsers = storage.getAllUsers();
+      setUsers(allUsers);
+      setStats(prev => ({ ...prev, activeUsers: allUsers.length }));
     } catch (err) {
       console.error('Failed to load admin data:', err);
     } finally {
@@ -41,23 +44,38 @@ export default function AdminDashboard() {
   const measurePerformance = () => {
     const fps = Math.round(1000 / 16.67);
     const ram = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1024 / 1024) : 512;
-    setStats({ fps, ram, activeUsers: Math.floor(Math.random() * 50) + 10 });
+    setStats({ fps, ram, activeUsers: users.length || 0 });
   };
 
-  const banAccessCode = async (code) => {
-    if (!confirm(`Ban access code ${code}?`)) return;
+  const kickUser = (user) => {
+    if (!isOwner) return;
+    if (!confirm(`Kick user ${user.code}? This will close their session immediately.`)) return;
+    
+    // Remove from session storage (simulates kick by clearing their session)
+    const kickCode = user.code;
+    localStorage.removeItem(`nexus_session_${kickCode}`);
+    sessionStorage.removeItem(`nexus_session_${kickCode}`);
+    
+    alert(`User ${user.code} has been kicked. Their browser session will end.`);
+    loadAdminData();
+  };
+
+  const banUser = async (user) => {
+    if (!confirm(`Ban user ${user.code}? They will not be able to login.`)) return;
     try {
-      // Mock ban - base44 removed
-      console.log('Ban code:', code);
+      storage.banUser(user.code);
+      alert(`User ${user.code} has been banned.`);
+      loadAdminData();
     } catch (err) {
-      console.error('Failed to ban code:', err);
+      console.error('Failed to ban user:', err);
     }
   };
 
-  const unbanCode = async (id) => {
+  const unbanUser = async (user) => {
     try {
-      // Mock unban - base44 removed
-      console.log('Unban id:', id);
+      storage.unbanUser(user.code);
+      alert(`User ${user.code} has been unbanned.`);
+      loadAdminData();
     } catch (err) {
       console.error('Failed to unban:', err);
     }
@@ -180,11 +198,103 @@ export default function AdminDashboard() {
             </GlassCard>
           </motion.div>
 
+          {/* User Management (Owner Only) */}
+          {isOwner && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="lg:col-span-2"
+            >
+              <GlassCard className="p-6" hover={false}>
+                <div className="flex items-center gap-3 mb-4">
+                  <Crown className="w-5 h-5 text-yellow-400" />
+                  <h2 className="text-lg font-semibold text-white">User Management</h2>
+                  <span className="px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs">Owner Only</span>
+                </div>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {users.map((user) => (
+                    <div 
+                      key={user.code}
+                      className={`p-4 rounded-lg border ${
+                        user.banned 
+                          ? 'bg-red-500/10 border-red-500/20' 
+                          : 'bg-white/5 border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <p className="text-white font-mono text-sm">{user.code}</p>
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              user.role === 'owner' ? 'bg-yellow-500/20 text-yellow-400' :
+                              user.role === 'admin' ? 'bg-red-500/20 text-red-400' :
+                              user.verified ? 'bg-green-500/20 text-green-400' :
+                              'bg-gray-500/20 text-gray-400'
+                            }`}>
+                              {user.role === 'owner' ? 'Owner' :
+                               user.role === 'admin' ? 'Admin' :
+                               user.verified ? 'Verified' : 'Guest'}
+                            </span>
+                            {user.banned && (
+                              <span className="px-2 py-1 rounded text-xs bg-red-500/20 text-red-400">
+                                BANNED
+                              </span>
+                            )}
+                          </div>
+                          {user.discordId && (
+                            <p className="text-xs text-white/50 mt-1">Discord: {user.discordId}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {!user.banned ? (
+                            <>
+                              <NeonButton 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => kickUser(user)}
+                                className="text-orange-400 hover:text-orange-300"
+                              >
+                                <UserX className="w-4 h-4 mr-1" />
+                                Kick
+                              </NeonButton>
+                              <NeonButton 
+                                variant="danger" 
+                                size="sm" 
+                                onClick={() => banUser(user)}
+                              >
+                                <Ban className="w-4 h-4 mr-1" />
+                                Ban
+                              </NeonButton>
+                            </>
+                          ) : (
+                            <NeonButton 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => unbanUser(user)}
+                              className="text-green-400 hover:text-green-300"
+                            >
+                              <Check className="w-4 h-4 mr-1" />
+                              Unban
+                            </NeonButton>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {users.length === 0 && (
+                    <p className="text-white/40 text-sm text-center py-4">No users registered</p>
+                  )}
+                </div>
+              </GlassCard>
+            </motion.div>
+          )}
+
           {/* Global Notices */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.4 }}
             className="lg:col-span-2"
           >
             <GlassCard className="p-6" hover={false}>
