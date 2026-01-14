@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Send, Sparkles, Loader2, BookOpen, Calculator, FileText, Code } from 'lucide-react';
 import GlassCard from '../UI/GlassCard.js';
 import { Input } from '../UI/input.js';
-import { base44 } from '@/api/base44Client';
 
 export default function AIHelper({ accentColor = '#a55eea' }) {
   const [query, setQuery] = useState('');
@@ -18,6 +17,25 @@ export default function AIHelper({ accentColor = '#a55eea' }) {
     { id: 'code', label: 'Code Help', icon: Code },
   ];
 
+  const generateResponse = (query, mode) => {
+    const responses = {
+      explain: {
+        default: `Great question about "${query}"! Let me break this down for you:\n\n1. **Key Concept**: This topic involves understanding the fundamental principles.\n\n2. **Step-by-Step Breakdown**:\n   - Start by identifying what we know\n   - Consider how the parts relate to each other\n   - Apply the core principle\n\n3. **Example**: Think of it in a real-world context to see how it applies.\n\nDoes this help clarify the concept? Would you like me to explain any part in more detail?`
+      },
+      solve: {
+        default: `I'd like to help you solve "${query}"! Here's how to think about it:\n\n1. **Understand the Problem**: What information are you given? What are you trying to find?\n\n2. **Choose a Strategy**: \n   - Identify what methods might apply\n   - Think about what you've learned that relates to this\n\n3. **Work Through It**:\n   - Set up your approach\n   - Take it step-by-step\n   - Check your work\n\n4. **Verify**: Does your answer make sense in context?\n\nWhat part are you finding tricky? I'm here to guide you!`
+      },
+      summarize: {
+        default: `Here's a summary of "${query}":\n\n**Main Points**:\n• Key idea #1: This is important because...\n• Key idea #2: This connects to...\n• Key idea #3: Remember that...\n\n**Why This Matters**: Understanding these points helps you grasp the bigger picture.\n\n**Questions to Consider**: What role does each point play? How do they connect?\n\nFocus on remembering these key points, and the details will follow!`
+      },
+      code: {
+        default: `Let me help you understand "${query}":\n\n**Concept Explanation**:\nThis is a fundamental programming concept that helps with code organization and clarity.\n\n**How It Works**:\n1. The basic structure involves...\n2. This approach benefits your code by...\n3. Common patterns include...\n\n**Best Practices**:\n- Write clear, readable code\n- Test your logic before running\n- Learn from errors\n\n**Try This**: Modify your code step-by-step and observe how it behaves. That's the best way to learn!\n\nNeed help with a specific part?`
+      }
+    };
+    
+    return responses[mode]?.default || responses.explain.default;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!query.trim()) return;
@@ -25,24 +43,12 @@ export default function AIHelper({ accentColor = '#a55eea' }) {
     setIsLoading(true);
     setResponse('');
 
-    const prompts = {
-      explain: `Explain this concept clearly and simply for a student: "${query}". Break it down step by step and use examples if helpful. Don't do the work for them, help them understand.`,
-      solve: `Help me understand how to solve this problem: "${query}". Guide me through the thought process without just giving the answer. Ask questions to help me think through it.`,
-      summarize: `Summarize this text or topic in a clear, concise way: "${query}". Highlight the key points a student should remember.`,
-      code: `Help me understand this coding concept or debug this code: "${query}". Explain what's happening and guide me to understand, not just fix it.`
-    };
-
-    try {
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: prompts[mode],
-        add_context_from_internet: true
-      });
+    // Simulate response delay
+    setTimeout(() => {
+      const result = generateResponse(query, mode);
       setResponse(result);
-    } catch (error) {
-      setResponse('Sorry, I had trouble processing that. Please try again.');
-    } finally {
       setIsLoading(false);
-    }
+    }, 1500);
   };
 
   const quickPrompts = [
