@@ -23,7 +23,7 @@ import BrowserTab from '../Components/Browser/BrowserTab.js';
 import { Input } from '../Components/UI/input';
 
 const DEFAULT_BOOKMARKS = [
-  { id: 1, title: 'Google', url: 'https://www.google.com', favicon: 'https://www.google.com/favicon.ico' },
+  { id: 1, title: 'Brave Search', url: 'https://search.brave.com', favicon: 'https://search.brave.com/favicon.ico' },
   { id: 2, title: 'Wikipedia', url: 'https://www.wikipedia.org', favicon: 'https://www.wikipedia.org/favicon.ico' },
   { id: 3, title: 'Khan Academy', url: 'https://www.khanacademy.org', favicon: 'https://www.khanacademy.org/favicon.ico' },
   { id: 4, title: 'Quizlet', url: 'https://www.quizlet.com', favicon: 'https://quizlet.com/favicon.ico' },
@@ -40,7 +40,7 @@ export default function Browser() {
   const [urlInput, setUrlInput] = useState('');
   const [bookmarks, setBookmarks] = useState(DEFAULT_BOOKMARKS);
   const [showBookmarks, setShowBookmarks] = useState(true);
-  const [settings, setSettings] = useState({ browser: { searchEngine: 'google' } });
+  const [settings, setSettings] = useState({ browser: { searchEngine: 'brave' } });
   const [iframeError, setIframeError] = useState(false);
   const [lastRequestedUrl, setLastRequestedUrl] = useState('');
   const [blockedSite, setBlockedSite] = useState(false);
