@@ -43,6 +43,7 @@ export default function Browser() {
   const [settings, setSettings] = useState({ browser: { searchEngine: 'google' } });
   const [iframeError, setIframeError] = useState(false);
   const [lastRequestedUrl, setLastRequestedUrl] = useState('');
+  const [blockedSite, setBlockedSite] = useState(false);
 
   const accentColor = '#3498db';
   const activeTab = tabs.find(t => t.id === activeTabId);
@@ -121,8 +122,9 @@ export default function Browser() {
   const navigateTo = (url) => {
     if (!url) return;
 
-    // Reset iframe error state
+    // Reset states
     setIframeError(false);
+    setBlockedSite(false);
     
     // Add https if not present
     let finalUrl = url;
@@ -153,6 +155,23 @@ export default function Browser() {
           : t
       ));
     }, 1500);
+
+    // After 3 seconds, if still no content, likely blocked
+    setTimeout(() => {
+      const iframeElement = document.querySelector('iframe[title="' + new URL(finalUrl).hostname + '"]');
+      if (iframeElement) {
+        try {
+          // Check if iframe has content
+          const iframeDoc = iframeElement.contentDocument || iframeElement.contentWindow?.document;
+          if (!iframeDoc || !iframeDoc.body || iframeDoc.body.innerHTML.trim() === '') {
+            setBlockedSite(true);
+          }
+        } catch (e) {
+          // Cross-origin iframe - it's likely blocked
+          setBlockedSite(true);
+        }
+      }
+    }, 3000);
   };
 
   const handleSubmit = (e) => {
@@ -347,6 +366,43 @@ export default function Browser() {
                         </div>
                       </motion.div>
                     </div>
+                  ) : blockedSite ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+                      <motion.div
+                        className="text-center p-8 max-w-md"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        <div className="mb-6">
+                          <Globe className="w-16 h-16 text-red-400 mx-auto opacity-60" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-3">Site Blocked Embedding</h3>
+                        <p className="text-white/70 mb-2">
+                          This site ({activeTab?.title}) blocks access from within iframes for security reasons.
+                        </p>
+                        <p className="text-white/60 text-sm mb-6">
+                          This is a security feature by the website, not a connection issue. Click the button below to open it in a new browser window.
+                        </p>
+                        <button
+                          onClick={() => window.open(activeTab.url, '_blank', 'noopener,noreferrer')}
+                          className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors mb-3"
+                        >
+                          Open in Browser ↗
+                        </button>
+                        <button
+                          onClick={() => {
+                            setBlockedSite(false);
+                            setTabs(prev => prev.map(t => 
+                              t.id === activeTabId ? { ...t, url: '', title: 'New Tab' } : t
+                            ));
+                            setUrlInput('');
+                          }}
+                          className="block w-full px-6 py-2 text-white/70 hover:text-white transition-colors"
+                        >
+                          Go Back
+                        </button>
+                      </motion.div>
+                    </div>
                   ) : (
                     <div className="relative w-full h-full">
                       <iframe
@@ -358,18 +414,20 @@ export default function Browser() {
                         onError={() => setIframeError(true)}
                       />
                       {/* Overlay hint for sites that might be blocked */}
-                      <div className="absolute top-0 right-0 z-40 p-4">
-                        <motion.button
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 2 }}
+                      <motion.div
+                        className="absolute top-0 right-0 z-40 p-4"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 2 }}
+                      >
+                        <button
                           onClick={() => window.open(activeTab.url, '_blank', 'noopener,noreferrer')}
                           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium shadow-lg"
                           title="Open in external browser (some sites block iframe embedding)"
                         >
                           Open Externally ↗
-                        </motion.button>
-                      </div>
+                        </button>
+                      </motion.div>
                     </div>
                   )}
                 </div>
