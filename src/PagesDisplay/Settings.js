@@ -138,12 +138,11 @@ export default function Settings() {
       }
       current[keys[keys.length - 1]] = value;
       
-      // Auto-save to localStorage immediately
-      storage.saveSettings(updated);
+      // Auto-save to IndexedDB immediately
+      storage.saveSettings(updated).catch(err => console.error('Failed to save settings:', err));
       
       return updated;
     });
-    storage.saveSettings({ ...settings });
   };
 
   const saveSettings = async () => {
