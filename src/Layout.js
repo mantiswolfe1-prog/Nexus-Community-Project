@@ -147,6 +147,10 @@ export default function Layout({ children, currentPageName }) {
   // Don't show search bar on Browser or StudyTools page
   const isBrowserPage = location.pathname.includes('/browser');
   const isStudyToolsPage = location.pathname.includes('/study');
+  const isLandingPage = location.pathname.includes('/landing') || location.pathname === '/';
+  const isAuthPage = location.pathname.includes('/auth');
+  const isConsentPage = location.pathname.includes('/consent');
+  const shouldHideUI = isLandingPage || isAuthPage || isConsentPage;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -162,16 +166,16 @@ export default function Layout({ children, currentPageName }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]" style={{ paddingLeft: sidebarWidth }}>
+    <div className="min-h-screen bg-[#0a0a0f]" style={{ paddingLeft: shouldHideUI ? 0 : sidebarWidth }}>
       {/* Global Keyboard Shortcuts Handler */}
-      <KeyboardHandler />
+      {!shouldHideUI && <KeyboardHandler />}
       {/* Opera-style Sidebar */}
-      <Sidebar onWidthChange={setSidebarWidth} />
+      {!shouldHideUI && <Sidebar onWidthChange={setSidebarWidth} />}
       {/* Sidebar Widgets Overlay (only when not docked) */}
-      <WidgetsOverlay />
+      {!shouldHideUI && <WidgetsOverlay />}
       
       {/* Universal Search Bar */}
-      {!isBrowserPage && !isStudyToolsPage && (
+      {!shouldHideUI && !isBrowserPage && !isStudyToolsPage && (
         <div className="sticky top-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 py-2">
             <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto flex items-center gap-2">

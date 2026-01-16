@@ -46,8 +46,9 @@ export default function Auth() {
       await storage.init();
       const guestCode = `GUEST_${Date.now()}`;
       
-      // Create guest session
+      // Create guest session and mark as approved
       session.set(guestCode, false, 'guest');
+      await storage.saveUserRole(guestCode, { role: 'guest', verified: false, approved: true });
       
       await storage.saveSettings({
         theme: { background: '#0a0a0f', accent: '#00f0ff', text: '#ffffff' },
