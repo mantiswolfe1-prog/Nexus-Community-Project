@@ -4,11 +4,13 @@ import { Key, AlertCircle, Shield, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils.js';
 import { storage, session } from '../Components/Storage/clientStorage.js';
+import { moderateContent, getViolationMessage } from '../utils/contentModeration.js';
 import NeonButton from '../Components/UI/NeonButton.js';
 import { Input } from '../Components/UI/input.js';
 
 export default function Auth() {
   const [accessCode, setAccessCode] = useState('');
+  const [username, setUsername] = useState('');
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -19,6 +21,24 @@ export default function Auth() {
       navigate(createPageUrl('Landing'));
     }
   }, [navigate]);
+
+  const isUsernameAppropriate = (name) => {
+    const result = moderateContent(name);
+    
+    // If high severity violations found, record it
+    if (result.hasHighSeverity && session.getAccessCode()) {
+      const violationResult = storage.recordViolation(session.getAccessCode(), 'inappropriate_username');
+      
+      // Auto-ban if 3 strikes
+      if (violationResult.shouldBan) {
+        storage.banUser(session.getAccessCode(), 1440); // 24 hour ban
+        alert(getViolationMessage(violationResult.warnings));
+        return false;
+      }
+    }
+    
+    return result.isClean;
+  };
 
   const handleGuestLogin = async () => {
     setLoading(true);
@@ -73,9 +93,19 @@ export default function Auth() {
       // Check role
       const roleData = storage.getUserRole(code);
       
-      // Check if banned
-      if (roleData.banned) {
-        setError('This account has been banned. Contact the administrator.');
+      // Check if banned with expiration check
+      if (storage.isBanned(code)) {
+        const banInfo = storage.getBanInfo(code);
+        if (banInfo) {
+          if (banInfo.isPermanent) {
+            setError('This account has been permanently banned. Contact the administrator.');
+          } else {
+            const minutesLeft = Math.ceil(banInfo.timeRemaining / 60000);
+            setError(`This account is temporarily banned. Try again in ${minutesLeft} minute${minutesLeft !== 1 ? 's' : ''}.`);
+          }
+        } else {
+          setError('This account has been banned. Contact the administrator.');
+        }
         setLoading(false);
         return;
       }
@@ -84,9 +114,21 @@ export default function Auth() {
       if (roleData.role === 'owner') {
         const existingUser = await storage.loadUser(code);
         if (!existingUser) {
-          const username = `Owner_Admin`;
-          await storage.saveUser(username, code);
+          if (!username.trim()) {
+            setError('Please enter a username');
+            setLoading(false);
+            return;
+          }
+          if (!isUsernameAppropriate(username.trim())) {
+            setError('Sorry, this name is unavailable');
+            setLoading(false);
+            return;
+          }
+          await storage.saveUser(username.trim(), code);
         }
+        const userEmail = existingUser?.username || username.trim();
+        localStorage.setItem('nexus_user_email', userEmail);
+        sessionStorage.setItem('nexus_user_email', userEmail);
         session.set(code, remember, 'owner');
         navigate(createPageUrl('Dashboard'));
         return;
@@ -96,9 +138,21 @@ export default function Auth() {
       if (roleData.role === 'admin') {
         const existingUser = await storage.loadUser(code);
         if (!existingUser) {
-          const username = `Admin_${code.slice(0, 4).toUpperCase()}`;
-          await storage.saveUser(username, code);
+          if (!username.trim()) {
+            setError('Please enter a username');
+            setLoading(false);
+            return;
+          }
+          if (!isUsernameAppropriate(username.trim())) {
+            setError('Sorry, this name is unavailable');
+            setLoading(false);
+            return;
+          }
+          await storage.saveUser(username.trim(), code);
         }
+        const userEmail = existingUser?.username || username.trim();
+        localStorage.setItem('nexus_user_email', userEmail);
+        sessionStorage.setItem('nexus_user_email', userEmail);
         session.set(code, remember, 'admin');
         navigate(createPageUrl('Dashboard'));
         return;
@@ -108,8 +162,19 @@ export default function Auth() {
       const existingUser = await storage.loadUser(code);
       
       if (existingUser) {
+        // Check if account is approved
+        if (!storage.isApproved(code)) {
+          setError('Your account is pending approval. Please wait for an administrator to approve your access.');
+          setLoading(false);
+          return;
+        }
+        
         // Returning verified user
         session.set(code, remember, roleData.verified ? 'verified' : 'guest');
+        // Store user identifier for admin tracking
+        const userEmail = existingUser.username || 'User';
+        localStorage.setItem('nexus_user_email', userEmail);
+        sessionStorage.setItem('nexus_user_email', userEmail);
         navigate(createPageUrl('Dashboard'));
       } else {
         // New user - check invite code
@@ -122,8 +187,17 @@ export default function Auth() {
         }
         
         // Valid invite code - create unverified account
-        const username = `Nexus_${code.slice(0, 4).toUpperCase()}`;
-        await storage.saveUser(username, code);
+        if (!username.trim()) {
+          setError('Please enter a username');
+          setLoading(false);
+          return;
+        }
+        if (!isUsernameAppropriate(username.trim())) {
+          setError('Sorry, this name is unavailable');
+          setLoading(false);
+          return;
+        }
+        await storage.saveUser(username.trim(), code);
         
         await storage.saveSettings({
           theme: { background: '#0a0a0f', accent: '#00f0ff', text: '#ffffff' },
@@ -135,14 +209,22 @@ export default function Auth() {
           lowEndMode: false
         });
 
-        // Save as unverified user
-        storage.saveUserRole(code, { role: 'guest', verified: false });
+        // Save as unverified user - requires approval
+        storage.saveUserRole(code, { role: 'guest', verified: false, approved: false });
 
         // Regenerate invite code
         storage.regenerateInviteCode();
 
+        // Store user identifier for admin tracking
+        localStorage.setItem('nexus_user_email', username);
+        sessionStorage.setItem('nexus_user_email', username);
+
         session.set(code, remember, 'guest');
-        navigate(createPageUrl('Dashboard'));
+        
+        // Redirect to pending approval page
+        setError('Account created! Please wait for admin approval before accessing Nexus.');
+        setLoading(false);
+        return;
       }
     } catch (err) {
       setError('Failed to authenticate. Please try again.');
@@ -176,6 +258,21 @@ export default function Auth() {
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2 text-center">
+                Choose your username
+              </label>
+              <Input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/30 text-center text-lg"
+                disabled={loading}
+                maxLength={20}
+              />
+            </div>
+
+            <div>
+              <label className="block text-white/80 text-sm font-medium mb-2 text-center">
                 Enter your Nexus access code
               </label>
               <Input
@@ -185,7 +282,6 @@ export default function Auth() {
                 placeholder="Access code (5-20 characters)"
                 className="bg-white/5 border-white/10 text-white placeholder:text-white/30 text-center text-lg"
                 required
-                autoFocus
                 disabled={loading}
               />
               <p className="text-xs text-white/40 mt-2 text-center">

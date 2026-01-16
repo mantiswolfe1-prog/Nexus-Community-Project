@@ -12,13 +12,13 @@ export default function DiscordVerification({ role, onVerify }) {
   const getRoleBadge = () => {
     switch (role) {
       case 'owner':
-        return { icon: Crown, color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', label: 'Owner' };
+        return { icon: Crown, color: 'text-[#ffc6ff]', bg: 'bg-[#ffc6ff]/10', border: 'border-[#ffc6ff]/20', label: 'Owner' };
       case 'admin':
-        return { icon: Shield, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', label: 'Admin' };
+        return { icon: Shield, color: 'text-[#bdb2ff]', bg: 'bg-[#bdb2ff]/10', border: 'border-[#bdb2ff]/20', label: 'Admin' };
       case 'verified':
-        return { icon: Check, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/20', label: 'Verified' };
+        return { icon: Check, color: 'text-[#caffbf]', bg: 'bg-[#caffbf]/10', border: 'border-[#caffbf]/20', label: 'Verified' };
       default:
-        return { icon: MessageCircle, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', label: 'Guest' };
+        return { icon: MessageCircle, color: 'text-[#ffadad]', bg: 'bg-[#ffadad]/10', border: 'border-[#ffadad]/20', label: 'Guest' };
     }
   };
 

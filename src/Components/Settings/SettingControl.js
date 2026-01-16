@@ -42,18 +42,20 @@ export default function SettingControl({
           </div>
         )}
         {type === 'dropdown' && (
-          <Select value={value} onValueChange={onChange}>
-            <SelectTrigger className="w-full bg-white/5 border-white/10 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map(opt => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="w-[18rem] sm:w-[22rem]">
+            <Select value={value} onValueChange={onChange}>
+              <SelectTrigger className="w-full bg-white/5 border-white/10 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-[14rem] w-[18rem] sm:w-[22rem]">
+                {options.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         )}
         {type === 'color' && (
           <input

@@ -6,7 +6,7 @@ import NeonButton from '../UI/NeonButton.js';
 import { getPersonalityResponse, getTimedTip } from '../../utils/personalities.js';
 import { storage } from '../Storage/clientStorage.js';
 
-export default function AIChat({ accentColor }) {
+export default function AIChat({ accentColor, initialQuery }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [personality, setPersonality] = useState('adaptive');
@@ -26,6 +26,13 @@ export default function AIChat({ accentColor }) {
     };
     loadPersonality();
   }, []);
+
+  // Handle initial query from universal search bar
+  useEffect(() => {
+    if (initialQuery && initialQuery.trim()) {
+      handleSend(initialQuery);
+    }
+  }, [initialQuery]);
 
   const generateResponse = (userMessage) => {
     const lowerMsg = userMessage.toLowerCase();
@@ -70,11 +77,12 @@ export default function AIChat({ accentColor }) {
     return defaultResponses[personality] || defaultResponses.adaptive;
   };
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = (messageText = null) => {
+    const textToSend = messageText || input;
+    if (!textToSend.trim()) return;
     
-    setMessages(prev => [...prev, { role: 'user', content: input }]);
-    const userInput = input;
+    setMessages(prev => [...prev, { role: 'user', content: textToSend }]);
+    const userInput = textToSend;
     setInput('');
     
     // Generate AI response

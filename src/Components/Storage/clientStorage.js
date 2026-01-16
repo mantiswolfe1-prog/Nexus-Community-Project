@@ -145,22 +145,27 @@ export const storage = {
     
     // Check owner
     if (accessCode === roles.owner) {
-      return { role: 'owner', verified: true, banned: false };
+      return { role: 'owner', verified: true, banned: false, approved: true };
     }
     
     // Check admin
     if (accessCode === roles.admin) {
-      return { role: 'admin', verified: true, banned: false };
+      return { role: 'admin', verified: true, banned: false, approved: true };
     }
     
     // Check registered users
     const user = roles.users.find(u => u.code === accessCode);
     if (user) {
-      return { role: user.role || 'verified', verified: user.verified || false, banned: user.banned || false };
+      return { 
+        role: user.role || 'verified', 
+        verified: user.verified || false, 
+        banned: user.banned || false,
+        approved: user.approved !== undefined ? user.approved : false
+      };
     }
     
     // Default guest
-    return { role: 'guest', verified: false, banned: false };
+    return { role: 'guest', verified: false, banned: false, approved: false };
   },
 
   saveUserRole(accessCode, roleData) {
@@ -176,11 +181,21 @@ export const storage = {
     this.saveRoleData(roles);
   },
 
-  banUser(accessCode) {
+  banUser(accessCode, duration = false) {
     const roles = this.getRoleData();
     const user = roles.users.find(u => u.code === accessCode);
     if (user) {
       user.banned = true;
+      if (duration && typeof duration === 'number') {
+        // Temporary ban - duration in minutes
+        user.banExpires = Date.now() + (duration * 60 * 1000);
+      } else if (duration === false || duration === null) {
+        // Permanent ban
+        user.banExpires = null;
+      } else {
+        // Backwards compatibility - if boolean true, default to 10 minutes
+        user.banExpires = Date.now() + (10 * 60 * 1000);
+      }
       this.saveRoleData(roles);
     }
   },
@@ -190,13 +205,126 @@ export const storage = {
     const user = roles.users.find(u => u.code === accessCode);
     if (user) {
       user.banned = false;
+      user.banExpires = null;
       this.saveRoleData(roles);
     }
+  },
+
+  isBanned(accessCode) {
+    const roles = this.getRoleData();
+    const user = roles.users.find(u => u.code === accessCode);
+    if (!user || !user.banned) return false;
+    
+    // Check if ban has expired
+    if (user.banExpires && Date.now() > user.banExpires) {
+      // Auto-unban
+      user.banned = false;
+      user.banExpires = null;
+      this.saveRoleData(roles);
+      return false;
+    }
+    
+    return true;
+  },
+
+  getBanInfo(accessCode) {
+    const roles = this.getRoleData();
+    const user = roles.users.find(u => u.code === accessCode);
+    if (!user || !user.banned) return null;
+    
+    // Check if expired
+    if (user.banExpires && Date.now() > user.banExpires) {
+      user.banned = false;
+      user.banExpires = null;
+      this.saveRoleData(roles);
+      return null;
+    }
+    
+    return {
+      isPermanent: !user.banExpires,
+      expiresAt: user.banExpires,
+      timeRemaining: user.banExpires ? user.banExpires - Date.now() : null
+    };
   },
 
   getAllUsers() {
     const roles = this.getRoleData();
     return roles.users;
+  },
+
+  // Auto-moderation functions
+  recordViolation(accessCode, violationType = 'inappropriate_content') {
+    const roles = this.getRoleData();
+    const user = roles.users.find(u => u.code === accessCode);
+    if (!user) return { warnings: 0, shouldBan: false };
+    
+    if (!user.violations) {
+      user.violations = [];
+    }
+    
+    user.violations.push({
+      type: violationType,
+      timestamp: Date.now()
+    });
+    
+    // Count recent violations (last 24 hours)
+    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    const recentViolations = user.violations.filter(v => v.timestamp > oneDayAgo);
+    
+    const warningCount = recentViolations.length;
+    const shouldBan = warningCount >= 3;
+    
+    this.saveRoleData(roles);
+    
+    return { warnings: warningCount, shouldBan };
+  },
+
+  getViolationCount(accessCode) {
+    const roles = this.getRoleData();
+    const user = roles.users.find(u => u.code === accessCode);
+    if (!user || !user.violations) return 0;
+    
+    // Count violations from last 24 hours
+    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    return user.violations.filter(v => v.timestamp > oneDayAgo).length;
+  },
+
+  clearViolations(accessCode) {
+    const roles = this.getRoleData();
+    const user = roles.users.find(u => u.code === accessCode);
+    if (user) {
+      user.violations = [];
+      this.saveRoleData(roles);
+    }
+  },
+
+  // Account approval functions
+  approveUser(accessCode) {
+    const roles = this.getRoleData();
+    const user = roles.users.find(u => u.code === accessCode);
+    if (user) {
+      user.approved = true;
+      this.saveRoleData(roles);
+    }
+  },
+
+  rejectUser(accessCode) {
+    const roles = this.getRoleData();
+    const userIndex = roles.users.findIndex(u => u.code === accessCode);
+    if (userIndex >= 0) {
+      roles.users.splice(userIndex, 1);
+      this.saveRoleData(roles);
+    }
+  },
+
+  getPendingUsers() {
+    const roles = this.getRoleData();
+    return roles.users.filter(u => !u.approved && u.role !== 'owner' && u.role !== 'admin');
+  },
+
+  isApproved(accessCode) {
+    const roleData = this.getUserRole(accessCode);
+    return roleData.approved || roleData.role === 'owner' || roleData.role === 'admin';
   },
   
   async saveSettings(settings) {
@@ -216,6 +344,28 @@ export const storage = {
       const tx = db.transaction(['settings'], 'readonly');
       const store = tx.objectStore('settings');
       const request = store.get('current');
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async saveBrowserState(browserState) {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(['settings'], 'readwrite');
+      const store = tx.objectStore('settings');
+      const request = store.put({ id: 'browserState', ...browserState });
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async loadBrowserState() {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(['settings'], 'readonly');
+      const store = tx.objectStore('settings');
+      const request = store.get('browserState');
       request.onsuccess = () => resolve(request.result || null);
       request.onerror = () => reject(request.error);
     });

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Pen, Calculator, Book, FileText, Bot } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from 'utils';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
@@ -21,8 +21,18 @@ const TOOLS = [
 ];
 
 export default function StudyTools() {
+  const location = useLocation();
   const [activeTool, setActiveTool] = useState('whiteboard');
+  const [aiQuery, setAiQuery] = useState('');
   const accentColor = '#a55eea';
+
+  // Check if AI query was passed from universal search bar
+  useEffect(() => {
+    if (location.state?.aiQuery) {
+      setActiveTool('ai');
+      setAiQuery(location.state.aiQuery);
+    }
+  }, [location.state]);
 
   const ActiveComponent = TOOLS.find(t => t.id === activeTool)?.component;
 
@@ -71,7 +81,7 @@ export default function StudyTools() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {ActiveComponent && <ActiveComponent accentColor={accentColor} />}
+          {ActiveComponent && <ActiveComponent accentColor={accentColor} initialQuery={aiQuery} />}
         </motion.div>
       </div>
     </div>

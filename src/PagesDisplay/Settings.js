@@ -30,13 +30,14 @@ import { createPageUrl } from '../utils.js';
 import NeonButton from '../Components/UI/NeonButton.js';
 import { Input } from '../Components/UI/input.js';
 import { storage, session } from '../Components/Storage/clientStorage.js';
+import { settingsEmitter } from '../utils/settingsEmitter.js';
 import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
 import SettingsSection from '../Components/Settings/SettingsSection.js';
 import SettingControl from '../Components/Settings/SettingControl.js';
 import DeviceProfileManager from '../Components/Settings/DeviceProfileManager.js';
 import DiscordVerification from '../Components/Settings/DiscordVerification.js';
 
-const BUILD_VERSION = 'v1.0.0-beta';
+const BUILD_VERSION = 'v0.9.5-beta';
 
 export default function Settings() {
   const [settings, setSettings] = useState({
@@ -44,9 +45,9 @@ export default function Settings() {
     background: { type: 'soft-particle-drift', particleCount: 50, speed: 0.5, opacity: 0.4, blur: 2 },
     performance: { targetFPS: 60, ramLimit: 1024, animationScale: 1, widgetLimit: 3, adaptivePerf: true, showFPS: false },
     games: { fullscreenOnLaunch: true, escToClose: true, lazyLoadStrength: 'medium' },
-    widgets: { enabled: false, spotify: false, youtube: false, tiktok: false, autoDisable: true },
+    widgets: { enabled: true, spotify: true, youtube: true, tiktok: false, autoDisable: true, dockInSidebar: true },
     aiTools: { enabled: false, autoSuggest: true, personality: 'adaptive' },
-    browser: { openLinksIn: 'nexus', searchEngine: 'google' },
+    browser: { openLinksIn: 'nexus', searchEngine: 'startpage' },
     lowEndMode: false
   });
   
@@ -71,6 +72,7 @@ export default function Settings() {
   const [editPassword, setEditPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [saveNotification, setSaveNotification] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -141,6 +143,13 @@ export default function Settings() {
       // Auto-save to IndexedDB immediately
       storage.saveSettings(updated).catch(err => console.error('Failed to save settings:', err));
       
+      // Emit settings change event to notify other components
+      settingsEmitter.emit(updated);
+      
+      // Show brief save notification
+      setSaveNotification('Saved');
+      setTimeout(() => setSaveNotification(''), 1500);
+      
       return updated;
     });
   };
@@ -163,6 +172,79 @@ export default function Settings() {
     a.download = `nexus-backup-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const exportSettings = async () => {
+    try {
+      const currentSettings = await storage.loadSettings();
+      const exportData = {
+        version: '1.0',
+        timestamp: Date.now(),
+        settings: currentSettings
+      };
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nexus-settings-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('Settings exported successfully!');
+    } catch (err) {
+      console.error('Failed to export settings:', err);
+      alert('Failed to export settings. Please try again.');
+    }
+  };
+
+  const importSettings = async () => {
+    try {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          try {
+            const importData = JSON.parse(event.target.result);
+            
+            if (!importData.settings) {
+              alert('Invalid settings file format.');
+              return;
+            }
+
+            // Merge imported settings with defaults to ensure all fields exist
+            const mergedSettings = {
+              theme: { ...settings.theme, ...importData.settings.theme },
+              background: { ...settings.background, ...importData.settings.background },
+              performance: { ...settings.performance, ...importData.settings.performance },
+              games: { ...settings.games, ...importData.settings.games },
+              widgets: { ...settings.widgets, ...importData.settings.widgets },
+              aiTools: { ...settings.aiTools, ...importData.settings.aiTools },
+              browser: { ...settings.browser, ...importData.settings.browser },
+              lowEndMode: importData.settings.lowEndMode ?? settings.lowEndMode
+            };
+
+            await storage.saveSettings(mergedSettings);
+            setSettings(mergedSettings);
+            settingsEmitter.emit(mergedSettings);
+            
+            alert('Settings imported successfully! Page will reload to apply changes.');
+            setTimeout(() => window.location.reload(), 1000);
+          } catch (err) {
+            console.error('Failed to parse settings file:', err);
+            alert('Invalid settings file. Please check the file and try again.');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    } catch (err) {
+      console.error('Failed to import settings:', err);
+      alert('Failed to import settings. Please try again.');
+    }
   };
 
   const deleteAllData = async () => {
@@ -465,13 +547,13 @@ export default function Settings() {
             { value: 'nexus', label: 'Nexus Browser (Built-in)' },
             { value: 'external', label: 'External Browser' }
           ]},
-          { path: 'browser.searchEngine', title: 'Search Engine', description: 'Default search engine for queries', type: 'dropdown', value: settings.browser?.searchEngine || 'google', options: [
-            { value: 'google', label: 'Google' },
-            { value: 'duckduckgo', label: 'DuckDuckGo' },
-            { value: 'brave', label: 'Brave Search' },
-            { value: 'bing', label: 'Bing' },
-            { value: 'yahoo', label: 'Yahoo' },
-            { value: 'ecosia', label: 'Ecosia' }
+          { path: 'browser.searchEngine', title: 'Search Engine', description: 'Default search engine for queries (iframe-friendly)', type: 'dropdown', value: settings.browser?.searchEngine || 'startpage', options: [
+            { value: 'startpage', label: 'Startpage' },
+            { value: 'searx', label: 'SearX' },
+            { value: 'metager', label: 'MetaGer' },
+            { value: 'mojeek', label: 'Mojeek' },
+            { value: 'qwant', label: 'Qwant' },
+            { value: 'swisscows', label: 'Swisscows' }
           ]}
         ]
       },
@@ -482,6 +564,7 @@ export default function Settings() {
         keywords: ['widget', 'spotify', 'youtube', 'tiktok', 'sidebar'],
         controls: [
           { path: 'widgets.enabled', title: 'Enable Widgets', description: 'Show sidebar widgets', type: 'toggle', value: settings.widgets.enabled },
+          { path: 'widgets.dockInSidebar', title: 'Dock in Sidebar', description: 'Show widgets in Opera-style sidebar', type: 'toggle', value: settings.widgets.dockInSidebar },
           { path: 'widgets.spotify', title: 'Spotify Widget', description: 'Music player widget', type: 'toggle', value: settings.widgets.spotify },
           { path: 'widgets.youtube', title: 'YouTube Widget', description: 'Video feed widget', type: 'toggle', value: settings.widgets.youtube },
           { path: 'widgets.tiktok', title: 'TikTok Widget', description: 'Short video widget', type: 'toggle', value: settings.widgets.tiktok },
@@ -609,10 +692,28 @@ export default function Settings() {
               )}
             </div>
 
+            {/* Settings Import/Export */}
+            <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+              <h4 className="text-cyan-400 font-medium mb-2">⚙️ Settings Backup</h4>
+              <p className="text-white/60 text-sm mb-3">
+                Export your settings as a safety backup or import from a previous export.
+              </p>
+              <div className="flex gap-2">
+                <NeonButton variant="ghost" onClick={exportSettings} className="flex-1">
+                  <Download className="w-3 h-3 mr-1" />
+                  Export Settings
+                </NeonButton>
+                <NeonButton variant="primary" onClick={importSettings} className="flex-1">
+                  <RefreshCw className="w-3 h-3 mr-1" />
+                  Import Settings
+                </NeonButton>
+              </div>
+            </div>
+
             <div className="flex gap-2">
               <NeonButton variant="ghost" onClick={exportData} className="flex-1">
                 <Download className="w-3 h-3 mr-1" />
-                Export Data
+                Export All Data
               </NeonButton>
               <NeonButton variant="danger" onClick={deleteAllData} className="flex-1">
                 <Trash2 className="w-3 h-3 mr-1" />
@@ -701,6 +802,19 @@ export default function Settings() {
         blur={settings.background.blur}
         lowEndMode={settings.lowEndMode}
       />
+
+      {/* Save Notification */}
+      {saveNotification && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-4 right-4 z-50 bg-green-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2"
+        >
+          <Check className="w-4 h-4" />
+          {saveNotification}
+        </motion.div>
+      )}
       
       <div className="relative z-10 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
         <motion.header 

@@ -16,6 +16,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
 import { useNavigateBack } from '../hooks/useNavigateBack.js';
+import { useSettings } from '../hooks/useSettings.js';
 import AnimatedBackground from '../Components/UI/AnimatedBackground.js';
 import GlassCard from '../Components/UI/GlassCard.js';
 import NeonButton from '../Components/UI/NeonButton.js';
@@ -23,16 +24,17 @@ import BrowserTab from '../Components/Browser/BrowserTab.js';
 import { Input } from '../Components/UI/input';
 
 const DEFAULT_BOOKMARKS = [
-  { id: 1, title: 'Brave Search', url: 'https://search.brave.com', favicon: 'https://search.brave.com/favicon.ico' },
+  { id: 1, title: 'Startpage', url: 'https://www.startpage.com', favicon: 'https://www.startpage.com/favicon.ico' },
   { id: 2, title: 'Wikipedia', url: 'https://www.wikipedia.org', favicon: 'https://www.wikipedia.org/favicon.ico' },
-  { id: 3, title: 'Khan Academy', url: 'https://www.khanacademy.org', favicon: 'https://www.khanacademy.org/favicon.ico' },
-  { id: 4, title: 'Quizlet', url: 'https://www.quizlet.com', favicon: 'https://quizlet.com/favicon.ico' },
+  { id: 3, title: 'Archive.org', url: 'https://archive.org', favicon: 'https://archive.org/favicon.ico' },
+  { id: 4, title: 'Internet Archive', url: 'https://web.archive.org', favicon: 'https://web.archive.org/favicon.ico' },
 ];
 
 export default function Browser() {
   const location = useLocation();
   const navigate = useNavigate();
   const goBack = useNavigateBack();
+  const { settings } = useSettings();
   const [tabs, setTabs] = useState([
     { id: 1, title: 'New Tab', url: '', loading: false }
   ]);
@@ -40,26 +42,30 @@ export default function Browser() {
   const [urlInput, setUrlInput] = useState('');
   const [bookmarks, setBookmarks] = useState(DEFAULT_BOOKMARKS);
   const [showBookmarks, setShowBookmarks] = useState(true);
-  const [settings, setSettings] = useState({ browser: { searchEngine: 'brave' } });
   const [iframeError, setIframeError] = useState(false);
   const [lastRequestedUrl, setLastRequestedUrl] = useState('');
 
   const accentColor = '#3498db';
   const activeTab = tabs.find(t => t.id === activeTabId);
 
-  // Search engine URLs
+  // Search engine URLs - using iframe-friendly alternatives
   const searchEngines = {
-    google: 'https://www.google.com/search?q=',
-    duckduckgo: 'https://duckduckgo.com/?q=',
-    brave: 'https://search.brave.com/search?q=',
-    bing: 'https://www.bing.com/search?q=',
-    yahoo: 'https://search.yahoo.com/search?p=',
-    ecosia: 'https://www.ecosia.org/search?q='
+    startpage: 'https://www.startpage.com/do/search?q=',
+    searx: 'https://searx.be/search?q=',
+    metager: 'https://metager.org/meta/meta.ger3?eingabe=',
+    mojeek: 'https://www.mojeek.com/search?q=',
+    qwant: 'https://www.qwant.com/?q=',
+    swisscows: 'https://swisscows.com/en/web?query='
   };
 
   useEffect(() => {
-    loadSettings();
+    loadBrowserState();
   }, []);
+
+  // Save browser state whenever tabs or activeTabId changes
+  useEffect(() => {
+    saveBrowserState();
+  }, [tabs, activeTabId]);
 
   // Open URL from navigation state
   useEffect(() => {
@@ -80,16 +86,31 @@ export default function Browser() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [iframeError, navigate]);
 
-  const loadSettings = async () => {
+  const loadBrowserState = async () => {
     try {
       const { storage } = await import('../Components/Storage/clientStorage.js');
       await storage.init();
-      const saved = await storage.loadSettings();
-      if (saved) {
-        setSettings(saved);
+      const saved = await storage.loadBrowserState();
+      if (saved && saved.tabs && saved.tabs.length > 0) {
+        setTabs(saved.tabs);
+        setActiveTabId(saved.activeTabId || saved.tabs[0].id);
+        setUrlInput(saved.tabs.find(t => t.id === saved.activeTabId)?.url || '');
       }
     } catch (err) {
-      console.error('Failed to load settings:', err);
+      console.error('Failed to load browser state:', err);
+    }
+  };
+
+  const saveBrowserState = async () => {
+    try {
+      const { storage } = await import('../Components/Storage/clientStorage.js');
+      await storage.init();
+      await storage.saveBrowserState({
+        tabs,
+        activeTabId
+      });
+    } catch (err) {
+      console.error('Failed to save browser state:', err);
     }
   };
 
@@ -123,7 +144,6 @@ export default function Browser() {
 
     // Reset states
     setIframeError(false);
-    setBlockedSite(false);
     
     // Add https if not present
     let finalUrl = url;
@@ -133,8 +153,8 @@ export default function Browser() {
         finalUrl = 'https://' + url;
       } else {
         // Use selected search engine
-        const searchEngine = settings.browser?.searchEngine || 'brave';
-        const searchUrl = searchEngines[searchEngine] || searchEngines.brave;
+        const searchEngine = settings.browser?.searchEngine || 'startpage';
+        const searchUrl = searchEngines[searchEngine] || searchEngines.startpage;
         finalUrl = `${searchUrl}${encodeURIComponent(url)}`;
       }
     }
@@ -203,26 +223,25 @@ export default function Browser() {
     <div className="min-h-screen relative overflow-hidden">
       <AnimatedBackground type="gradient" accentColor={accentColor} />
       
-      <div className="relative z-10 p-4 sm:p-6 h-screen flex flex-col max-w-7xl mx-auto">
+      <div className="relative z-10 h-screen flex flex-col">
         {/* Header */}
         <motion.header 
-          className="mb-4"
+          className="px-4 py-2"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-4">
             <NeonButton variant="ghost" size="icon" onClick={goBack}>
               <ArrowLeft className="w-5 h-5" />
             </NeonButton>
             <div>
-              <h1 className="text-2xl font-bold text-white">Browser</h1>
-              <p className="text-white/50 text-sm">Private sandboxed browsing</p>
+              <h1 className="text-xl font-bold text-white">Browser</h1>
             </div>
           </div>
         </motion.header>
 
         {/* Browser Window */}
-        <GlassCard className="flex-grow flex flex-col overflow-hidden" hover={false}>
+        <GlassCard className="flex-grow flex flex-col overflow-hidden mx-2 mb-2" hover={false}>
           {/* Tabs Bar */}
           <div className="flex items-center gap-1 p-2 border-b border-white/10 overflow-x-auto">
             <AnimatePresence mode="popLayout">
@@ -349,7 +368,7 @@ export default function Browser() {
                       </motion.div>
                     </div>
                   ) : (
-                    <div className="w-full h-full">
+                    <div className="relative w-full h-full">
                       <iframe
                         src={activeTab.url}
                         className="w-full h-full border-0"
@@ -358,6 +377,14 @@ export default function Browser() {
                         referrerPolicy="no-referrer"
                         onError={() => setIframeError(true)}
                       />
+                      <div className="absolute top-3 right-3 z-10">
+                        <NeonButton
+                          variant="solid"
+                          onClick={() => window.open(activeTab.url, '_blank', 'noopener,noreferrer')}
+                        >
+                          Open in new tab ↗
+                        </NeonButton>
+                      </div>
                     </div>
                   )}
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Circle, Grid, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Sparkles, Circle, Code, Rocket, Waves, Hexagon, Zap, Bug, Cpu, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from 'utils';
 import GlassCard from '../Components/UI/GlassCard.js';
@@ -8,14 +8,22 @@ import NeonButton from '../Components/UI/NeonButton.js';
 import { Slider } from '../Components/UI/slider';
 import { Label } from '../Components/UI/label';
 import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
+import MatrixRain from '../Components/Backgrounds/MatrixRain.js';
+import SpaceBackground from '../Components/Backgrounds/SpaceBackground.js';
+import WaveGradient from '../Components/Backgrounds/WaveGradient.js';
+import GeometricPatterns from '../Components/Backgrounds/GeometricPatterns.js';
+import AuroraLights from '../Components/Backgrounds/AuroraLights.js';
+import Fireflies from '../Components/Backgrounds/Fireflies.js';
+import CircuitBoard from '../Components/Backgrounds/CircuitBoard.js';
+import NetworkNodes from '../Components/Backgrounds/NetworkNodes.js';
 
 const BACKGROUNDS = [
   {
     id: 'soft-particle-drift',
     name: 'Soft Particle Drift',
-    description: 'Calm, minimal particles (default)',
+    description: 'Calm, minimal particles',
     icon: Circle,
-    preview: '/placeholder-particles.jpg',
+    component: SoftParticleDrift,
     settings: [
       { key: 'particleCount', label: 'Particle Count', min: 20, max: 100, default: 50 },
       { key: 'speed', label: 'Speed', min: 0.1, max: 2, default: 0.5, step: 0.1 },
@@ -24,28 +32,107 @@ const BACKGROUNDS = [
     ]
   },
   {
-    id: 'gradient-flow',
-    name: 'Gradient Flow',
-    description: 'Animated color gradient',
-    icon: Sparkles,
-    preview: '/placeholder-gradient.jpg',
-    settings: []
+    id: 'matrix-rain',
+    name: 'Matrix Rain',
+    description: 'Falling code characters',
+    icon: Code,
+    component: MatrixRain,
+    settings: [
+      { key: 'speed', label: 'Fall Speed', min: 0.5, max: 3, default: 1, step: 0.1 },
+      { key: 'density', label: 'Character Density', min: 0.7, max: 1, default: 0.95, step: 0.05 },
+      { key: 'fontSize', label: 'Font Size', min: 10, max: 24, default: 16 },
+      { key: 'opacity', label: 'Opacity', min: 0.3, max: 1, default: 0.8, step: 0.1 }
+    ]
   },
   {
-    id: 'minimal-grid',
-    name: 'Minimal Grid',
-    description: 'Interactive grid lines',
-    icon: Grid,
-    preview: '/placeholder-grid.jpg',
-    settings: []
+    id: 'space',
+    name: 'Space',
+    description: 'Stars, planets, and nebulas',
+    icon: Rocket,
+    component: SpaceBackground,
+    settings: [
+      { key: 'starCount', label: 'Star Count', min: 50, max: 500, default: 200 },
+      { key: 'speed', label: 'Star Speed', min: 0.1, max: 2, default: 0.5, step: 0.1 },
+      { key: 'showPlanets', label: 'Show Planets', type: 'boolean', default: true },
+      { key: 'showNebula', label: 'Show Nebula', type: 'boolean', default: true }
+    ]
   },
   {
-    id: 'custom-image',
-    name: 'Custom Image',
-    description: 'Upload your own background',
-    icon: ImageIcon,
-    preview: '/placeholder-custom.jpg',
-    settings: []
+    id: 'wave-gradient',
+    name: 'Wave Gradient',
+    description: 'Flowing animated waves',
+    icon: Waves,
+    component: WaveGradient,
+    settings: [
+      { key: 'waveCount', label: 'Wave Count', min: 1, max: 5, default: 3 },
+      { key: 'speed', label: 'Wave Speed', min: 0.1, max: 3, default: 1, step: 0.1 },
+      { key: 'amplitude', label: 'Wave Height', min: 20, max: 100, default: 50 },
+      { key: 'opacity', label: 'Opacity', min: 0.2, max: 1, default: 0.6, step: 0.1 }
+    ]
+  },
+  {
+    id: 'geometric',
+    name: 'Geometric Patterns',
+    description: 'Rotating shapes',
+    icon: Hexagon,
+    component: GeometricPatterns,
+    settings: [
+      { key: 'pattern', label: 'Pattern', type: 'select', options: ['hexagons', 'triangles', 'circles'], default: 'hexagons' },
+      { key: 'density', label: 'Density', min: 20, max: 60, default: 30 },
+      { key: 'speed', label: 'Rotation Speed', min: 0.1, max: 2, default: 0.5, step: 0.1 },
+      { key: 'opacity', label: 'Opacity', min: 0.2, max: 1, default: 0.4, step: 0.1 }
+    ]
+  },
+  {
+    id: 'aurora',
+    name: 'Aurora Lights',
+    description: 'Northern lights effect',
+    icon: Zap,
+    component: AuroraLights,
+    settings: [
+      { key: 'intensity', label: 'Intensity', min: 0.3, max: 1, default: 0.7, step: 0.1 },
+      { key: 'speed', label: 'Animation Speed', min: 0.5, max: 3, default: 1, step: 0.1 },
+      { key: 'opacity', label: 'Opacity', min: 0.3, max: 1, default: 0.6, step: 0.1 }
+    ]
+  },
+  {
+    id: 'fireflies',
+    name: 'Fireflies',
+    description: 'Glowing particles',
+    icon: Bug,
+    component: Fireflies,
+    settings: [
+      { key: 'count', label: 'Firefly Count', min: 10, max: 80, default: 30 },
+      { key: 'speed', label: 'Movement Speed', min: 0.1, max: 2, default: 0.5, step: 0.1 },
+      { key: 'glowSize', label: 'Glow Size', min: 10, max: 40, default: 20 },
+      { key: 'opacity', label: 'Opacity', min: 0.4, max: 1, default: 0.8, step: 0.1 }
+    ]
+  },
+  {
+    id: 'circuit',
+    name: 'Circuit Board',
+    description: 'Tech circuit with data flow',
+    icon: Cpu,
+    component: CircuitBoard,
+    settings: [
+      { key: 'nodeCount', label: 'Node Count', min: 20, max: 80, default: 40 },
+      { key: 'speed', label: 'Data Speed', min: 0.5, max: 3, default: 1, step: 0.1 },
+      { key: 'showData', label: 'Show Data Flow', type: 'boolean', default: true },
+      { key: 'opacity', label: 'Opacity', min: 0.4, max: 1, default: 0.7, step: 0.1 }
+    ]
+  },
+  {
+    id: 'network',
+    name: 'Network Nodes',
+    description: 'Connected network visualization',
+    icon: Share2,
+    component: NetworkNodes,
+    settings: [
+      { key: 'nodeCount', label: 'Node Count', min: 20, max: 100, default: 50 },
+      { key: 'connectionDistance', label: 'Connection Range', min: 80, max: 250, default: 150 },
+      { key: 'speed', label: 'Movement Speed', min: 0.1, max: 2, default: 0.5, step: 0.1 },
+      { key: 'opacity', label: 'Opacity', min: 0.3, max: 1, default: 0.6, step: 0.1 }
+    ]
   }
 ];
 
@@ -53,15 +140,19 @@ export default function Backgrounds() {
   const [selectedBg, setSelectedBg] = useState('soft-particle-drift');
   const [expandedBg, setExpandedBg] = useState(null);
   const [bgSettings, setBgSettings] = useState({
-    'soft-particle-drift': {
-      particleCount: 50,
-      speed: 0.5,
-      opacity: 0.4,
-      blur: 2
-    }
+    'soft-particle-drift': { particleCount: 50, speed: 0.5, opacity: 0.4, blur: 2 },
+    'matrix-rain': { speed: 1, density: 0.95, fontSize: 16, opacity: 0.8 },
+    'space': { starCount: 200, speed: 0.5, showPlanets: true, showNebula: true },
+    'wave-gradient': { waveCount: 3, speed: 1, amplitude: 50, opacity: 0.6 },
+    'geometric': { pattern: 'hexagons', density: 30, speed: 0.5, opacity: 0.4 },
+    'aurora': { intensity: 0.7, speed: 1, opacity: 0.6 },
+    'fireflies': { count: 30, speed: 0.5, glowSize: 20, opacity: 0.8 },
+    'circuit': { nodeCount: 40, speed: 1, showData: true, opacity: 0.7 },
+    'network': { nodeCount: 50, connectionDistance: 150, speed: 0.5, opacity: 0.6 }
   });
 
   const accentColor = '#00f0ff';
+  const ActiveBackground = BACKGROUNDS.find(bg => bg.id === selectedBg)?.component || SoftParticleDrift;
 
   const updateSetting = (bgId, key, value) => {
     setBgSettings(prev => ({
@@ -80,8 +171,8 @@ export default function Backgrounds() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <SoftParticleDrift 
-        {...bgSettings['soft-particle-drift']}
+      <ActiveBackground 
+        {...bgSettings[selectedBg]}
         accentColor={accentColor}
       />
       
@@ -155,14 +246,36 @@ export default function Backgrounds() {
                             <Label className="text-white text-sm mb-2 block">
                               {setting.label}: {bgSettings[bg.id]?.[setting.key] ?? setting.default}
                             </Label>
-                            <Slider
-                              value={[bgSettings[bg.id]?.[setting.key] ?? setting.default]}
-                              onValueChange={([val]) => updateSetting(bg.id, setting.key, val)}
-                              min={setting.min}
-                              max={setting.max}
-                              step={setting.step || 1}
-                              className="w-full"
-                            />
+                            {setting.type === 'boolean' ? (
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={bgSettings[bg.id]?.[setting.key] ?? setting.default}
+                                  onChange={(e) => updateSetting(bg.id, setting.key, e.target.checked)}
+                                  className="w-5 h-5 rounded bg-white/10 border-white/20 text-cyan-500 focus:ring-2 focus:ring-cyan-500/50"
+                                />
+                                <span className="text-white/70 text-sm">Enable</span>
+                              </label>
+                            ) : setting.type === 'select' ? (
+                              <select
+                                value={bgSettings[bg.id]?.[setting.key] ?? setting.default}
+                                onChange={(e) => updateSetting(bg.id, setting.key, e.target.value)}
+                                className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                              >
+                                {setting.options.map(opt => (
+                                  <option key={opt} value={opt} className="bg-gray-900">{opt}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <Slider
+                                value={[bgSettings[bg.id]?.[setting.key] ?? setting.default]}
+                                onValueChange={([val]) => updateSetting(bg.id, setting.key, val)}
+                                min={setting.min}
+                                max={setting.max}
+                                step={setting.step || 1}
+                                className="w-full"
+                              />
+                            )}
                           </div>
                         ))}
 
@@ -170,10 +283,10 @@ export default function Backgrounds() {
                         <div className="mt-6">
                           <Label className="text-white text-sm mb-2 block">Live Preview</Label>
                           <div className="relative w-full h-32 rounded-xl overflow-hidden border border-white/10">
-                            <SoftParticleDrift 
-                              {...bgSettings[bg.id]}
-                              accentColor={accentColor}
-                            />
+                            {React.createElement(bg.component, {
+                              ...bgSettings[bg.id],
+                              accentColor
+                            })}
                           </div>
                         </div>
                       </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Sparkles, Gamepad2, Brain, Wrench, Shield, Calendar } from 'lucide-react';
+import { ArrowLeft, Sparkles, Gamepad2, Brain, Wrench, Shield, Calendar, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils.js';
 import NeonButton from '../Components/UI/NeonButton.js';
@@ -9,9 +9,52 @@ import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
 
 const updates = [
   {
-    version: 'v1.0.0-beta',
+    version: 'v0.9.5-beta',
+    date: 'January 16, 2026',
+    type: 'minor',
+    highlights: [
+      {
+        icon: Shield,
+        title: 'Opera-Style Sidebar',
+        description: 'Permanent sidebar with navigation and docked widgets - always accessible across all pages',
+        category: 'Feature'
+      },
+      {
+        icon: Sparkles,
+        title: 'First-Time Setup Wizard',
+        description: 'Simple 4-step wizard for new users: Performance, Password, Colors, and AI settings',
+        category: 'Feature'
+      },
+      {
+        icon: Wrench,
+        title: 'Settings Import/Export',
+        description: 'Backup and restore your settings as a safety barrier - portable across devices',
+        category: 'Feature'
+      },
+      {
+        icon: Brain,
+        title: 'Universal Search Bar',
+        description: 'Search the web or ask AI from anywhere - toggle between Browser and AI modes',
+        category: 'Feature'
+      }
+    ],
+    improvements: [
+      'Sidebar widgets docking (Spotify, YouTube)',
+      'Collapsible sidebar (72px ↔ 260px)',
+      'Live settings propagation via event emitter',
+      'Persistent browser tabs across sessions',
+      'Wider dropdown menus for better readability',
+      '8 new animated backgrounds (Matrix, Space, Aurora, etc.)',
+      'AI query routing from universal search',
+      'First-time setup flag in storage',
+      'Settings export with version tracking',
+      'Import during setup wizard'
+    ]
+  },
+  {
+    version: 'v0.9.0-beta',
     date: 'January 2026',
-    type: 'major',
+    type: 'minor',
     highlights: [
       {
         icon: Shield,
@@ -122,8 +165,30 @@ const typeColors = {
 };
 
 export default function Updates() {
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#0a0a0f]">
+      {/* Emergency Refresh Button - Loads First */}
+      <div className="fixed top-4 right-4 z-[9999]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <button
+            onClick={handleRefresh}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/30 text-cyan-400 transition-all shadow-lg backdrop-blur-md"
+            title="Refresh page if something doesn't load"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span className="text-sm font-medium">Refresh</span>
+          </button>
+        </motion.div>
+      </div>
+
       <SoftParticleDrift accentColor="#00f0ff" particleCount={30} speed={0.3} opacity={0.3} blur={2} />
       
       <div className="relative z-10 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">

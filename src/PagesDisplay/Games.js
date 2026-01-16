@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Star, Clock, TrendingUp, Shuffle, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from 'utils';
@@ -18,29 +18,29 @@ const SAMPLE_GAMES = [
     thumbnail: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect fill="%23edc850" width="400" height="225"/%3E%3Ctext x="50%25" y="50%25" font-size="72" fill="%23fff" text-anchor="middle" dy=".3em" font-family="Arial,sans-serif" font-weight="bold"%3E2048%3C/text%3E%3C/svg%3E', 
     tags: ['puzzle', 'casual', 'math'], 
     performance: 'low', 
-    source: 'poki', 
+    source: 'playable', 
     playTime: '5-10 min',
-    url: 'https://poki.com/en/g/2048'
+    url: 'https://play2048.co/'
   },
   { 
     id: 2, 
-    title: 'Subway Surfers', 
-    thumbnail: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Cdefs%3E%3ClinearGradient id="g" x1="0" y1="0" x2="1" y2="1"%3E%3Cstop offset="0%25" stop-color="%2300bcd4"/%3E%3Cstop offset="100%25" stop-color="%23ff9800"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill="url(%23g)" width="400" height="225"/%3E%3Ctext x="50%25" y="50%25" font-size="36" fill="%23fff" text-anchor="middle" dy=".3em" font-family="Arial,sans-serif" font-weight="bold"%3ESubway Surfers%3C/text%3E%3C/svg%3E', 
-    tags: ['arcade', 'endless-runner', 'action'], 
-    performance: 'medium', 
-    source: 'crazygames', 
+    title: 'Tetris', 
+    thumbnail: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect fill="%23000" width="400" height="225"/%3E%3Ctext x="50%25" y="50%25" font-size="48" fill="%2300ffff" text-anchor="middle" dy=".3em" font-family="Arial,sans-serif" font-weight="bold"%3ETETRIS%3C/text%3E%3C/svg%3E', 
+    tags: ['puzzle', 'classic', 'arcade'], 
+    performance: 'low', 
+    source: 'playable', 
     playTime: '10+ min',
-    url: 'https://www.crazygames.com/game/subway-surfers'
+    url: 'https://tetris.com/play-tetris'
   },
   { 
     id: 3, 
-    title: 'Slope', 
-    thumbnail: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect fill="%2344d62c" width="400" height="225"/%3E%3Cpolygon points="50,175 200,75 350,150" fill="%23fff" opacity="0.3"/%3E%3Ctext x="50%25" y="50%25" font-size="48" fill="%23fff" text-anchor="middle" dy=".3em" font-family="Arial,sans-serif" font-weight="bold"%3ESlope%3C/text%3E%3C/svg%3E', 
-    tags: ['action', '3d', 'skill'], 
-    performance: 'medium', 
-    source: 'coolmath', 
+    title: 'Snake', 
+    thumbnail: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect fill="%2344d62c" width="400" height="225"/%3E%3Ctext x="50%25" y="50%25" font-size="48" fill="%23fff" text-anchor="middle" dy=".3em" font-family="Arial,sans-serif" font-weight="bold"%3ESNAKE%3C/text%3E%3C/svg%3E', 
+    tags: ['arcade', 'classic', 'skill'], 
+    performance: 'low', 
+    source: 'playable', 
     playTime: '5 min',
-    url: 'https://www.coolmathgames.com/0-slope'
+    url: 'https://playsnake.org/'
   },
   { 
     id: 4, 
@@ -48,9 +48,9 @@ const SAMPLE_GAMES = [
     thumbnail: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect fill="%23312e2b" width="400" height="225"/%3E%3Cg transform="translate(150,60)"%3E%3Crect fill="%23fff" width="25" height="25"/%3E%3Crect fill="%23312e2b" x="25" width="25" height="25"/%3E%3Crect fill="%23312e2b" y="25" width="25" height="25"/%3E%3Crect fill="%23fff" x="25" y="25" width="25" height="25"/%3E%3C/g%3E%3Ctext x="50%25" y="75%25" font-size="42" fill="%23fff" text-anchor="middle" dy=".3em" font-family="Arial,sans-serif" font-weight="bold"%3EChess%3C/text%3E%3C/svg%3E', 
     tags: ['strategy', 'board', 'multiplayer'], 
     performance: 'low', 
-    source: 'poki', 
+    source: 'playable', 
     playTime: '15+ min',
-    url: 'https://poki.com/en/g/chess'
+    url: 'https://www.chess.com/play/computer'
   },
   { 
     id: 5, 
@@ -623,26 +623,12 @@ export default function Games() {
   const [favorites, setFavorites] = useState([]);
   const [activeTab, setActiveTab] = useState('all');
   const [activeSource, setActiveSource] = useState('all');
-  const [playingGame, setPlayingGame] = useState(null);
-  const [settings, setSettings] = useState({ browser: { openLinksIn: 'nexus' } });
 
   const accentColor = '#ff6b6b';
 
   useEffect(() => {
     loadFavorites();
-    loadSettings();
   }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && playingGame) {
-        setPlayingGame(null);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [playingGame]);
 
   const loadFavorites = async () => {
     try {
@@ -662,12 +648,11 @@ export default function Games() {
         setSettings(saved);
       }
     } catch (err) {
-      console.error('Failed to load settings:', err);
+      console.error('Failed to load favorites:', err);
     }
   };
 
   const allTags = [...new Set(SAMPLE_GAMES.flatMap(g => g.tags))].sort();
-  const sources = ['all', 'poki', 'crazygames', 'coolmath'];
 
   const filteredGames = SAMPLE_GAMES.filter(game => {
     const matchesSearch = game.title.toLowerCase().includes(search.toLowerCase());
@@ -708,15 +693,8 @@ export default function Games() {
   };
 
   const playGame = (game) => {
-    const openLinksIn = settings.browser?.openLinksIn || 'nexus';
-    
-    if (openLinksIn === 'external') {
-      // Open in external browser
-      window.open(game.url, '_blank', 'noopener,noreferrer');
-    } else {
-      // Open in modal iframe by default
-      setPlayingGame(game);
-    }
+    // Navigate to browser with the game URL
+    navigate(createPageUrl('Browser'), { state: { url: game.url } });
   };
 
   const tabs = [
@@ -880,45 +858,6 @@ export default function Games() {
             <p className="text-white/50 text-lg">No games found matching your filters</p>
           </motion.div>
         )}
-
-        {/* Game Player Modal */}
-        <AnimatePresence>
-          {playingGame && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-              onClick={() => setPlayingGame(null)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 20 }}
-                className="w-full max-w-5xl aspect-video"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <GlassCard className="w-full h-full p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-white">{playingGame.title}</h2>
-                    <NeonButton variant="ghost" onClick={() => setPlayingGame(null)}>
-                      Close (ESC)
-                    </NeonButton>
-                  </div>
-                  <div className="w-full h-[calc(100%-60px)] bg-black rounded-xl overflow-hidden">
-                    <iframe
-                      src={playingGame.url}
-                      className="w-full h-full border-0"
-                      title={playingGame.title}
-                      allowFullScreen
-                      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
-                    />
-                  </div>
-                </GlassCard>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );

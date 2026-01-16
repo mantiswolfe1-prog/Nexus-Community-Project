@@ -28,6 +28,7 @@ import SoftParticleDrift from '../Components/Backgrounds/SoftParticleDrift.js';
 import FPSMonitor from '../Components/Performance/FPSMonitor.js';
 import { PerformanceProvider, usePerformance } from '../Components/Performance/PerformanceManager.js';
 import DashboardAI from '../Components/AI/DashboardAI.js';
+import FirstTimeSetup from '../Components/UI/FirstTimeSetup.js';
 
 function DashboardContent() {
   const [user, setUser] = useState(null);
@@ -37,6 +38,7 @@ function DashboardContent() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [showFPS, setShowFPS] = useState(false);
+  const [showSetup, setShowSetup] = useState(false);
   const navigate = useNavigate();
   const { handlePerformanceChange, getPerformanceSettings } = usePerformance();
 
@@ -94,6 +96,12 @@ function DashboardContent() {
         }
       });
       setFavorites(userFavorites);
+      
+      // Check if first-time setup is needed
+      const setupComplete = await storage.db.get('setupComplete');
+      if (!setupComplete) {
+        setShowSetup(true);
+      }
     } catch (err) {
       console.error('Failed to load user data:', err);
     } finally {
@@ -135,6 +143,20 @@ function DashboardContent() {
     if (hour < 12) return 'Good Morning';
     if (hour < 17) return 'Good Afternoon';
     return 'Good Evening';
+  };
+
+  const getRoleColor = () => {
+    const role = session.getRole();
+    switch (role) {
+      case 'owner':
+        return '#ffc6ff'; // Pink
+      case 'admin':
+        return '#bdb2ff'; // Purple
+      case 'verified':
+        return '#caffbf'; // Green
+      default:
+        return '#ffadad'; // Red (Guest)
+    }
   };
 
   const recordTabClick = async (tabName) => {
@@ -264,7 +286,7 @@ function DashboardContent() {
                 </span>
               </motion.div>
               <h1 className="text-3xl sm:text-4xl font-bold text-white">
-                {getGreeting()}, <span style={{ color: settings?.theme?.accent || '#00f0ff' }}>{user?.username || 'Student'}</span>
+                {getGreeting()}, <span style={{ color: getRoleColor() }}>{user?.username || 'Student'}</span>
               </h1>
               <p className="text-white/50 mt-1">Welcome to Nexus</p>
             </div>
@@ -392,6 +414,48 @@ function DashboardContent() {
         {/* AI Assistant */}
         <DashboardAI accentColor={settings?.theme?.accent || '#a55eea'} />
       </div>
+
+      {/* First-Time Setup Wizard */}
+      {showSetup && (
+        <FirstTimeSetup
+          username={user?.username}
+          accessCode={session.get()}
+          onComplete={async (setupSettings) => {
+            try {
+              // Update username and password
+              if (setupSettings.username && setupSettings.password) {
+                await storage.saveUser(setupSettings.username, setupSettings.password);
+                session.set(setupSettings.password, true, session.getRole());
+                setUser({ ...user, username: setupSettings.username });
+              }
+
+              // Update settings
+              const updatedSettings = {
+                ...settings,
+                performance: {
+                  ...settings.performance,
+                  showFPS: setupSettings.performance?.showFPS || false
+                },
+                theme: setupSettings.theme || settings.theme,
+                aiTools: {
+                  ...settings.aiTools,
+                  personality: setupSettings.aiTools?.personality || 'adaptive'
+                }
+              };
+              await storage.saveSettings(updatedSettings);
+              setSettings(updatedSettings);
+              setShowFPS(setupSettings.performance?.showFPS || false);
+
+              // Mark setup as complete
+              await storage.db.put('setupComplete', true);
+              setShowSetup(false);
+            } catch (err) {
+              console.error('Failed to complete setup:', err);
+              alert('Failed to save setup. Please try again.');
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
