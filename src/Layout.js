@@ -74,7 +74,11 @@ export default function Layout({ children, currentPageName }) {
           session.clear();
           sessionStorage.clear();
           window.location.href = createPageUrl('Landing');
-        }\n      } catch (err) {\n        console.error('Ban check failed:', err);\n      }\n    };
+        }
+      } catch (err) {
+        console.error('Ban check failed:', err);
+      }
+    };
 
     // Update heartbeat for active sessions tracking
     const updateHeartbeat = () => {
