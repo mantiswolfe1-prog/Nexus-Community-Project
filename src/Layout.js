@@ -63,7 +63,18 @@ export default function Layout({ children, currentPageName }) {
         
         // Check if user got banned during their session
         if (storage.isBanned(accessCode)) {
-          const banInfo = storage.getBanInfo(accessCode);\n          let message = 'Your account has been banned.';\n          if (banInfo && !banInfo.isPermanent) {\n            const minutesLeft = Math.ceil(banInfo.timeRemaining / 60000);\n            message = `Your account has been temporarily banned. Try again in ${minutesLeft} minute${minutesLeft !== 1 ? 's' : ''}.`;\n          }\n          \n          alert(message);\n          session.clear();\n          sessionStorage.clear();\n          window.location.href = createPageUrl('Landing');\n        }\n      } catch (err) {\n        console.error('Ban check failed:', err);\n      }\n    };
+          const banInfo = storage.getBanInfo(accessCode);
+          let message = 'Your account has been banned.';
+          if (banInfo && !banInfo.isPermanent) {
+            const minutesLeft = Math.ceil(banInfo.timeRemaining / 60000);
+            message = `Your account has been temporarily banned. Try again in ${minutesLeft} minute${minutesLeft !== 1 ? 's' : ''}.`;
+          }
+          
+          alert(message);
+          session.clear();
+          sessionStorage.clear();
+          window.location.href = createPageUrl('Landing');
+        }\n      } catch (err) {\n        console.error('Ban check failed:', err);\n      }\n    };
 
     // Update heartbeat for active sessions tracking
     const updateHeartbeat = () => {
