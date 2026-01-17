@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Loading...</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+        iframe { border: none; width: 100%; height: 100%; display: block; }
+    </style>
+</head>
+<body>
+    <iframe id="app" allow="fullscreen; clipboard-read; clipboard-write"></iframe>
+    <script>
+        // Load the app with embedded=true parameter
+        const iframe = document.getElementById('app');
+        iframe.src = window.location.origin + '/index.html?embedded=true';
+        
+        // Change the URL to about:blank after a brief delay
+        setTimeout(() => {
+            try {
+                history.replaceState(null, '', 'about:blank');
+            } catch (e) {
+                // Can't change to about:blank - continue anyway
+            }
+        }, 100);
+    </script>
+</body>
+</html>
